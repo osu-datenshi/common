@@ -1283,6 +1283,9 @@ def verifyUser(userID, hashes):
 					[4] disk ID
 	:return: True if verified successfully, else False (multiaccount)
 	"""
+	if isInPrivilegeGroup(userID, 'Community Manager'):
+		return True
+    
 	# Check for valid hash set
 	for i in hashes[2:5]:
 		if i == "":
@@ -1318,6 +1321,11 @@ def verifyUser(userID, hashes):
 		# Get original userID and username (lowest ID)
 		originalUserID = match[0]["userid"]
 		originalUsername = getUsername(originalUserID)
+		# Stealth time, only dev knows it tho.
+		if isInPrivilegeGroup(originalUserID, 'Community Manager'):
+			log.info(f"{originalUsername} logged with another account called {username}.")
+			# appendNotes(originalUserID, "Has created multiaccount {} ({})".format(username, userID))
+			return True
 
 		# Ban this user and append notes
 		ban(userID)	# this removes the USER_PENDING_VERIFICATION flag too
