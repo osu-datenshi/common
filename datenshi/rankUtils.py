@@ -7,7 +7,6 @@ try:
 except ImportError:
     from MySQLdb._exceptions import ProgrammingError
 
-import objects.beatmap
 from common import generalUtils
 # from common.constants import gameModes, mods
 from common.constants import privileges
@@ -22,7 +21,7 @@ def __daten_import_call__(variableList):
         """
         I know this is significantly slower, and I do understand why I do it.
         """
-        mapIDs = [r['beatmap_id'] for r glob.db.fetchAll('SELECT beatmap_id FROM beatmaps WHERE beatmapset_id = %s', (mapsetID,))]
+        mapIDs = [r['beatmap_id'] for r in glob.db.fetchAll('SELECT beatmap_id FROM beatmaps WHERE beatmapset_id = %s', (mapsetID,))]
         if isinstance(status, dict):
             # assign status by map ID
             reverseMap = {}
@@ -62,7 +61,7 @@ def __daten_import_call__(variableList):
             rankTypeID   = 2
         else:
             return None
-    	glob.db.execute("UPDATE beatmaps SET ranked = {}, ranked_status_freezed = {}, rankedby = {} WHERE beatmap_id in ({})".format(\
+        glob.db.execute("UPDATE beatmaps SET ranked = {}, ranked_status_freezed = {}, rankedby = {} WHERE beatmap_id in ({})".format( \
           rankTypeID, freezeStatus, userID,          \
           ','.join(str(mapID) for mapID in mapList)) \
         )
@@ -97,7 +96,7 @@ def announceMap(idTuple, status, banchoCallback=None, discordCallback=None):
         discordMsg = "{} has been {}".format(beatmapData["song_name"], status)
     else:
         banchoMsg  = "[https://osu.ppy.sh/b/{} {}] has been partially-{}!".format(mapID,beatmapData['song_name'],status)
-		discordMsg = "{} has been {}".format(beatmapData["song_name"], status)
+        discordMsg = "{} has been {}".format(beatmapData["song_name"], status)
     if supportBancho:
         banchoCallback(banchoMsg)
     if supportDiscord:
