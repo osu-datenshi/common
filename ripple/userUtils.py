@@ -1481,12 +1481,12 @@ def verifyUser(userID, hashes):
 		# Restrict the original
 		restrict(originalUserID)
 		# send to discord
-        if 'DiscordWebook' in globals():
-            pass
-    		webhook = DiscordWebhook(url=glob.conf.config["discord"]["autobanned"])
-    		embed = DiscordEmbed(title="NEW REPORTS!", description="{} has been banned because multiaccount (old id {} {})".format(username, originalUsername, originalUserID), color=16711680)
-    		webhook.add_embed(embed)
-    		webhook.execute()
+		if 'DiscordWebook' in globals():
+			pass
+			webhook = DiscordWebhook(url=glob.conf.config["discord"]["autobanned"])
+			embed = DiscordEmbed(title="NEW REPORTS!", description="{} has been banned because multiaccount (old id {} {})".format(username, originalUsername, originalUserID), color=16711680)
+			webhook.add_embed(embed)
+			webhook.execute()
 		# Disallow login
 		return False
 	else:
@@ -1664,7 +1664,6 @@ def updateTotalHits(userID=0, gameMode=gameModes.STD, newHits=0, score=None):
         ),
         (newHits, userID)
     )
-
 
 def updateTotalHitsRX(userID=0, gameMode=gameModes.STD, newHits=0, score=None):
     if score is None and userID == 0:
