@@ -43,27 +43,27 @@ def readableMods(m):
 	:return: readable mods string, eg HDDT
 	"""
 	r = ""
-	if m == 0:
-		return "nomod"
-	if m & mods.NOFAIL > 0:
+	if not m:
+		return "nomod" # wtf too ugly
+	if m & mods.NOFAIL:
 		r += "NF"
-	if m & mods.EASY > 0:
+	if m & mods.EASY:
 		r += "EZ"
-	if m & mods.HIDDEN > 0:
+	if m & mods.HIDDEN:
 		r += "HD"
-	if m & mods.HARDROCK > 0:
+	if m & mods.HARDROCK:
 		r += "HR"
-	if m & mods.DOUBLETIME > 0:
+	if m & mods.DOUBLETIME:
 		r += "DT"
-	if m & mods.NIGHTCORE > 0:
+	if m & mods.NIGHTCORE:
 		r += "NC"
-	if m & mods.HALFTIME > 0:
+	if m & mods.HALFTIME:
 		r += "HT"
-	if m & mods.FLASHLIGHT > 0:
+	if m & mods.FLASHLIGHT:
 		r += "FL"
-	if m & mods.SPUNOUT > 0:
+	if m & mods.SPUNOUT:
 		r += "SO"
-	if m & mods.TOUCHSCREEN > 0:
+	if m & mods.TOUCHSCREEN:
 		r += "TD"
 	if m & mods.RELAX > 0:
 		r += "RX"
