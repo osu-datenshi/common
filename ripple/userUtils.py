@@ -39,7 +39,7 @@ def getBeatmapTime(beatmapID):
 
 def PPBoard(userID, relax):
     result = glob.db.fetch(
-        "SELECT ppboard FROM {table}_stats WHERE id = {userid} and ".format(table='rx' if relax else 'users', userid=userID))
+        "SELECT ppboard FROM {table}_stats WHERE id = {userid}".format(table='rx' if relax else 'users', userid=userID))
     return result['ppboard']
 
 
