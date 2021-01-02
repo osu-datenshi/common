@@ -7,7 +7,6 @@ try:
 except ImportError:
     from MySQLdb._exceptions import ProgrammingError
 
-import objects.beatmap
 from common import generalUtils
 from common.constants import gameModes, mods
 from common.constants import privileges
