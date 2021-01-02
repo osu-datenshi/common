@@ -59,7 +59,7 @@ def noPPLimit(userID, relax):
     return result['unrestricted_pp']
 
 def whitelistUserPPLimit(userID, table):
-    glob.db.execute("UPDATE {table}_stats SET unrestricted_pp = 1 WHERE id = {userid}".format(rx='table' if rx else 'users',
+    glob.db.execute("UPDATE {table}_stats SET unrestricted_pp = 1 WHERE id = {userid}".format(table='rx' if rx else 'users',
                                                                                            userid=userID))
 
 def incrementPlaytime(userID, gameMode=0, length=0):
