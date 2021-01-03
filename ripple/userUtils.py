@@ -1684,11 +1684,11 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 	support_new_limiter = 'pp-limiter' in glob.conf.extra['lets']['submit']
 	mode_name = 'std taiko ctb mania'.split()[gameMode]
 	if support_new_limiter:
-		var_limit   = glob.conf.extra['lets']['submit']['pp-limiter'].fetch(mode_name + '-tolerant',False)
-		var_fullmod = glob.conf.extra['lets']['submit']['pp-limiter'].fetch(mode_name + '-tolerant-mod',False)
+		var_limit   = glob.conf.extra['lets']['submit']['pp-limiter'].get(mode_name + '-tolerant',False)
+		var_fullmod = glob.conf.extra['lets']['submit']['pp-limiter'].get(mode_name + '-tolerant-mod',False)
 	else:
-		var_limit   = glob.conf.extra['lets']['submit'].fetch('tolerant-pp-limit',False)
-		var_fullmod = glob.conf.extra['lets']['submit'].fetch('tolerant-fullmod',False)
+		var_limit   = glob.conf.extra['lets']['submit'].get('tolerant-pp-limit',False)
+		var_fullmod = glob.conf.extra['lets']['submit'].get('tolerant-fullmod',False)
 	# Check eligiblity of Variable Limiter
 	# - it'll go as is, if it's not FULLMOD
 	# - if it's FULLMOD, should check if VARIABLE_FULLMOD is on or not.
@@ -1749,7 +1749,7 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 		else:
 			basic_pp   = cfg["max-vanilla-pp"]
 			relax_pp   = cfg["max-std-pp"]
-			fullmod_pp = cfg.fetch("max-fullmod-pp", 1000)
+			fullmod_pp = cfg.get("max-fullmod-pp", 1000)
 		if is_fullmod:
 			score = fullmod_pp
 		else:
