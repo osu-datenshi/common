@@ -1693,7 +1693,7 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 	# - it'll go as is, if it's not FULLMOD
 	# - if it's FULLMOD, should check if VARIABLE_FULLMOD is on or not.
 	can_limit = (modded and var_fullmod) or var_limit
-	if UsingRelax:
+	if relax:
 		current_stats = userUtils.getUserStatsRx(userID, gameMode)
 	else:
 		current_stats = userUtils.getUserStats(userId, gameMode)
@@ -1727,14 +1727,14 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 		cfg = glob.conf.extra["lets"]["submit"]
 	if can_limit:
 		if support_new_limiter:
-			if UsingRelax:
+			if relax:
 				limiter = cfg[mode_name + "-relax-fm"]
 			else:
 				limiter = cfg[mode_name + "-vanilla-fm"]
 			if is_fullmod:
 				limiter = cfg[mode_name + "-modded-fm"] or limiter
 		else:
-			if UsingRelax:
+			if relax:
 				limiter = cfg["max-relax-pp-formula"]
 			else:
 				limiter = cfg["max-vanilla-pp-formula"]
@@ -1753,5 +1753,5 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 		if is_fullmod:
 			score = fullmod_pp
 		else:
-			score = 999999 if gameMode > 0 else (relax_pp if UsingRelax else basic_pp)
+			score = 999999 if gameMode > 0 else (relax_pp if relax else basic_pp)
 	return (score, var_limit, can_limit)
