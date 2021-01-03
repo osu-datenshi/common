@@ -1494,6 +1494,7 @@ def verifyUser(userID, hashes):
 		# No matches found, set USER_PUBLIC and USER_NORMAL flags and reset USER_PENDING_VERIFICATION flag
 		resetPendingFlag(userID)
 		#log.info("User **{}** ({}) has verified his account with hash set _{}_".format(username, userID, hashes[2:5]), "cm")
+        return True
 
 
 def hasVerifiedHardware(userID):
