@@ -62,7 +62,7 @@ def __daten_import_call__(variableList):
         else:
             return None
         glob.db.execute("UPDATE beatmaps SET ranked = {}, ranked_status_freezed = {}, rankedby = {} WHERE beatmap_id in ({})".format( \
-          rankTypeID, freezeStatus, userID,          \
+          rankTypeID, freezeStatus, rankUserID,          \
           ','.join(str(mapID) for mapID in mapList)) \
         )
     
@@ -85,18 +85,18 @@ def announceMap(idTuple, status, banchoCallback=None, discordCallback=None):
         mapsetID = idTuple[1]
     
     if mapID is None:
-        beatmapData = glob.db.fetch("SELECT beatmapset_id, song_name, ranked FROM beatmaps WHERE beatmapset_id = {} LIMIT 1".format(mapsetID))
+        beatmapData = glob.db.fetch("SELECT beatmapset_id, artist, title, ranked FROM beatmaps WHERE beatmapset_id = {} LIMIT 1".format(mapsetID))
     else:
-        beatmapData = glob.db.fetch("SELECT beatmapset_id, song_name, ranked FROM beatmaps WHERE beatmap_id = {} LIMIT 1".format(mapID))
+        beatmapData = glob.db.fetch("SELECT beatmapset_id, artist, title, difficulty_name, ranked FROM beatmaps WHERE beatmap_id = {} LIMIT 1".format(mapID))
     
     supportBancho  = 'BOT_NAME' in dir(glob) and callable(banchoCallback)
     supportDiscord = 'discord' in glob.conf.config and 'ranked-map' in glob.conf.config['discord'] and callable(discordCallback)
-    if isSet:
-        banchoMsg  = "[https://osu.ppy.sh/s/{} {}] has been {}!".format(mapsetID,beatmapData['song_name'],status)
-        discordMsg = "{} has been {}".format(beatmapData["song_name"], status)
+    if mapID is None:
+        banchoMsg  = "[https://osu.ppy.sh/s/{} {} - {}] has been {}!".format(mapsetID,beatmapData['artist'],beatmapData['title'],status)
+        discordMsg = "{} - {} has been {}".format(beatmapData['artist'],beatmapData['title'], status)
     else:
-        banchoMsg  = "[https://osu.ppy.sh/b/{} {}] has been partially-{}!".format(mapID,beatmapData['song_name'],status)
-        discordMsg = "{} has been {}".format(beatmapData["song_name"], status)
+        banchoMsg  = "[https://osu.ppy.sh/b/{} {} - {} [{}]] has been {}!".format(mapID,beatmapData['artist'],beatmapData['title'],beatmapData['difficulty_name'],status)
+        discordMsg = "{} - {} [{}] has been {}".format(beatmapData['artist'],beatmapData['title'],beatmapData['difficulty_name'], status)
     if supportBancho:
         banchoCallback(banchoMsg)
     if supportDiscord:
