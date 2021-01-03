@@ -1696,7 +1696,7 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 	if relax:
 		current_stats = getUserStatsRx(userID, gameMode)
 	else:
-		current_stats = getUserStats(userId, gameMode)
+		current_stats = getUserStats(userID, gameMode)
 	# Given a current player statistics
 	# Calculate maximum obtainable PP by player. This will allow proper progression of respective player.
 	def calculate_limit(limiter, stat):
@@ -1731,14 +1731,14 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 				limiter = cfg[mode_name + "-relax-fm"]
 			else:
 				limiter = cfg[mode_name + "-vanilla-fm"]
-			if is_fullmod:
+			if modded:
 				limiter = cfg[mode_name + "-modded-fm"] or limiter
 		else:
 			if relax:
 				limiter = cfg["max-relax-pp-formula"]
 			else:
 				limiter = cfg["max-vanilla-pp-formula"]
-			if is_fullmod:
+			if modded:
 				limiter = cfg["max-fullmod-pp-formula"] or limiter
 		score = calculate_limit(limiter, current_stats)
 	else:
@@ -1750,7 +1750,7 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 			basic_pp   = cfg["max-vanilla-pp"]
 			relax_pp   = cfg["max-std-pp"]
 			fullmod_pp = cfg.get("max-fullmod-pp", 1000)
-		if is_fullmod:
+		if modded:
 			score = fullmod_pp
 		else:
 			score = 999999 if gameMode > 0 else (relax_pp if relax else basic_pp)
