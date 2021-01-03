@@ -1694,9 +1694,9 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 	# - if it's FULLMOD, should check if VARIABLE_FULLMOD is on or not.
 	can_limit = (modded and var_fullmod) or var_limit
 	if relax:
-		current_stats = userUtils.getUserStatsRx(userID, gameMode)
+		current_stats = getUserStatsRx(userID, gameMode)
 	else:
-		current_stats = userUtils.getUserStats(userId, gameMode)
+		current_stats = getUserStats(userId, gameMode)
 	# Given a current player statistics
 	# Calculate maximum obtainable PP by player. This will allow proper progression of respective player.
 	def calculate_limit(limiter, stat):
