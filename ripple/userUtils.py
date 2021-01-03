@@ -1279,7 +1279,9 @@ def isInPrivilegeGroup(userID, groupName):
         userPrivileges = userToken.privileges
     else:
         userPrivileges = getPrivileges(userID)
-    return userPrivileges & groupPrivileges == groupPrivileges
+    
+    normUser, normGroup = [(priv & ~privileges.USER_DONOR) for priv in [userPrivileges, groupPrivileges]]
+    return normUser & normGroup == normGroup
 
 
 def isInAnyPrivilegeGroup(userID, groups):
