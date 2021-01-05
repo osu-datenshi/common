@@ -50,11 +50,11 @@ def __daten_import_call__(variableList):
             freezeStatus = 1
             rankTypeID   = 2
         elif 'loved' == status:
-            freezeStatus = 2
+            freezeStatus = 1
             rankTypeID   = 5
         elif 'unranked' == status:
             # tbh, this also can lock out for a map being unable to have a leaderboard too.
-            freezeStatus = 0
+            freezeStatus = 1
             rankTypeID   = 0
         elif 'reset' == status:
             freezeStatus = 0
