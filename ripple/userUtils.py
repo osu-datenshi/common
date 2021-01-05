@@ -35,22 +35,51 @@ def getBeatmapTime(beatmapID):
 
     return p
 
+def getUserSetting(userID, key):
+    query = glob.db.fetch('select int_value as i, str_value as s from user_settings where id = {} and name = {}'.format(userID, key))
+    result = None
+    if query is None:
+        pass
+    elif query['s'] is not None:
+        result = query['s']
+    elif query['i'] is not None:
+        result = query['i']
+    return result
+
+def setUserSetting(userID, key, value):
+    query = glob.db.fetch('select int_value as i, str_value as s from user_settings where user_id = {} and name = {}'.format(userID, key))
+    input = [None, None]
+    if isinstance(value,int):
+        input[0] = value
+    else:
+        input[1] = str(value)
+    if query is None:
+        glob.db.execute('insert into user_settings (user_id, name, int_value, str_value) values (%s, %s, %s, %s)', [userID, key, *input])
+    else:
+        glob.db.execute('update user_settings int_value = %s, str_value = %s where user_id = {} and name = {}'.format(userID, key), [*input])
 
 def PPBoard(userID, relax):
+    result = getUserSetting(userID, 'global:board')
+    if result is not None:
+        return result == 1
+    result = getUserSetting(userID, '{}:board'.format(('relax' if relax else 'standard')))
+    if result is not None:
+        return result == 1
     result = glob.db.fetch(
         "SELECT ppboard FROM {table}_stats WHERE id = {userid}".format(table='rx' if relax else 'users', userid=userID))
     return result['ppboard']
 
-
-def setPPBoard(userID, relax):
-    glob.db.execute(
-        "UPDATE {table}_stats SET ppboard = 1 WHERE id = {userid}".format(table='rx' if relax else 'users', userid=userID))
-
-
 def setScoreBoard(userID, relax):
+    setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 0)
     glob.db.execute(
         "UPDATE {table}_stats SET ppboard = 0 WHERE id = {userid}".format(table='rx' if relax else 'users', userid=userID))
 
+def setPPBoard(userID, relax):
+    setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 1)
+    glob.db.execute("UPDATE {table}_stats SET ppboard = 1 WHERE id = {userid}".format(table='rx' if relax else 'users', userid=userID))
+
+def setInvisibleBoard(userID, relax):
+    setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 2)
 
 def noPPLimit(userID, relax):
     result = glob.db.fetch(
