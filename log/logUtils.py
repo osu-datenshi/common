@@ -3,6 +3,7 @@ from common import generalUtils
 from objects import glob
 import time
 import os
+import sys
 
 ENDL = "\n" if os.name == "posix" else "\r\n"
 
@@ -22,7 +23,7 @@ def logMessage(message, alertType = "INFO", messageColor = bcolors.ENDC, discord
 	:return:
 	"""
 	# Get type color from alertType
-	if alertType == "INFO":
+	if alertType in ("INFO", "INGFO"):
 		typeColor = bcolors.GREEN
 	elif alertType == "WARNING":
 		typeColor = bcolors.YELLOW
@@ -36,7 +37,10 @@ def logMessage(message, alertType = "INFO", messageColor = bcolors.ENDC, discord
 		typeColor = bcolors.ENDC
 
 	# Message without colors
-	finalMessage = "[{time}] {type} - {message}".format(time=generalUtils.getTimestamp(), type=alertType, message=message)
+	# WORKAROUND FOR WEAK TERMINALS
+	if sys.stdout.encoding.lower() != 'utf-8':
+		message = message.encode()
+	finalMessage = "[{time}] {type} - {message}".format(time=generalUtils.getTimestamp(), type=alertType, message=message
 
 	# Message with colors
 	finalMessageConsole = "{typeColor}[{time}] {type}{endc} - {messageColor}{message}{endc}".format(
