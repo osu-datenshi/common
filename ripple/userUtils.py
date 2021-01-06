@@ -36,7 +36,7 @@ def getBeatmapTime(beatmapID):
     return p
 
 def getUserSetting(userID, key):
-    query = glob.db.fetch('select int_value as i, str_value as s from user_settings where id = {} and name = {}'.format(userID, key))
+    query = glob.db.fetch('select int_value as i, str_value as s from user_settings where id = {} and name = "{}"'.format(userID, key))
     result = None
     if query is None:
         pass
@@ -47,7 +47,7 @@ def getUserSetting(userID, key):
     return result
 
 def setUserSetting(userID, key, value):
-    query = glob.db.fetch('select int_value as i, str_value as s from user_settings where user_id = {} and name = {}'.format(userID, key))
+    query = glob.db.fetch('select int_value as i, str_value as s from user_settings where user_id = {} and name = "{}"'.format(userID, key))
     input = [None, None]
     if isinstance(value,int):
         input[0] = value
@@ -56,7 +56,7 @@ def setUserSetting(userID, key, value):
     if query is None:
         glob.db.execute('insert into user_settings (user_id, name, int_value, str_value) values (%s, %s, %s, %s)', [userID, key, *input])
     else:
-        glob.db.execute('update user_settings int_value = %s, str_value = %s where user_id = {} and name = {}'.format(userID, key), [*input])
+        glob.db.execute('update user_settings int_value = %s, str_value = %s where user_id = {} and name = "{}"'.format(userID, key), [*input])
 
 def getOrderedUserSetting(userID, key, prefix_order):
     orders = list(prefix_order) + ['global']
