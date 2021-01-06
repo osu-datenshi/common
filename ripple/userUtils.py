@@ -58,16 +58,33 @@ def setUserSetting(userID, key, value):
     else:
         glob.db.execute('update user_settings int_value = %s, str_value = %s where user_id = {} and name = {}'.format(userID, key), [*input])
 
+def getOrderedUserSetting(userID, key, prefix_order):
+    orders = list(prefix_order) + ['global']
+    result = None
+    while result is None and orders:
+        prefix, orders = orders[0], orders[1:]
+        result = getUserSetting(userID, f"{prefix}:{key}")
+    return result
+
 def PPBoard(userID, relax):
-    result = getUserSetting(userID, 'global:board')
-    if result is not None:
-        return result == 1
-    result = getUserSetting(userID, '{}:board'.format(('relax' if relax else 'standard')))
+    result = getOrderedUserSetting(userID, 'board', [('relax' if relax else 'standard')])
     if result is not None:
         return result == 1
     result = glob.db.fetch(
         "SELECT ppboard FROM {table}_stats WHERE id = {userid}".format(table='rx' if relax else 'users', userid=userID))
     return result['ppboard']
+
+def BoardMode(userID, relax):
+    result = getOrderedUserSetting(userID, 'board', [('relax' if relax else 'standard')])
+    if result is not None:
+        return result
+    return 0
+
+def InvisibleBoard(userID):
+    result = getOrderedUserSetting(userID, 'board_visibility', [])
+    if result is not None:
+        return result
+    return 0
 
 def setScoreBoard(userID, relax):
     setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 0)
@@ -78,8 +95,10 @@ def setPPBoard(userID, relax):
     setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 1)
     glob.db.execute("UPDATE {table}_stats SET ppboard = 1 WHERE id = {userid}".format(table='rx' if relax else 'users', userid=userID))
 
-def setInvisibleBoard(userID, relax):
-    setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 2)
+def setInvisibleBoard(userID, relax, b):
+    setUserSetting(userID, "{}:board_visibility".format('global'), b)
+    # setUserSetting(userID, "{}:board_visibility".format(('relax' if relax else 'standard')), b)
+    # setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 2)
 
 def noPPLimit(userID, relax):
     result = glob.db.fetch(
