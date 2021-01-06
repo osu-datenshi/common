@@ -56,7 +56,7 @@ def setUserSetting(userID, key, value):
     if query is None:
         glob.db.execute('insert into user_settings (user_id, name, int_value, str_value) values (%s, %s, %s, %s)', [userID, key, *input])
     else:
-        glob.db.execute('update user_settings int_value = %s, str_value = %s where user_id = {} and name = "{}"'.format(userID, key), [*input])
+        glob.db.execute('update user_settings set int_value = %s, str_value = %s where user_id = {} and name = "{}"'.format(userID, key), [*input])
 
 def getOrderedUserSetting(userID, key, prefix_order):
     orders = list(prefix_order) + ['global']
