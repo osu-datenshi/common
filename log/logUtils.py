@@ -40,7 +40,7 @@ def logMessage(message, alertType = "INFO", messageColor = bcolors.ENDC, discord
 	# WORKAROUND FOR WEAK TERMINALS
 	if sys.stdout.encoding.lower() != 'utf-8':
 		message = message.encode()
-	finalMessage = "[{time}] {type} - {message}".format(time=generalUtils.getTimestamp(), type=alertType, message=message
+	finalMessage = "[{time}] {type} - {message}".format(time=generalUtils.getTimestamp(), type=alertType, message=message)
 
 	# Message with colors
 	finalMessageConsole = "{typeColor}[{time}] {type}{endc} - {messageColor}{message}{endc}".format(
