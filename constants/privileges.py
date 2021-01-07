@@ -27,9 +27,8 @@ ADMIN_KICK_USERS          = 1 << 19
 USER_PENDING_VERIFICATION = 1 << 20
 USER_TOURNAMENT_STAFF     = 1 << 21
 ADMIN_CAKER               = 1 << 22
-ADMIN_BYPASS_CHECKS       = 1 << 23
+ADMIN_REPLAY_WATCHER      = 1 << 23
 # low byte 3
 # AUTORANK_MANAGE, this is an extremely critical role, so just BAT/BN won't do.
 ADMIN_MANAGE_AUTORANK     = 1 << 24
 # groups
-ADMIN_BYPASS_MODERATION   = ADMIN_CHAT_MOD | ADMIN_BYPASS_CHECKS
