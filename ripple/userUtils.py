@@ -15,6 +15,8 @@ from common.ripple import passwordUtils, scoreUtils
 from objects import glob
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
+STUPIDEST_ABBREVIATION_LIST = ['rx']
+
 def logUserLog(log, fileMd5, userID, gameMode, scoreid):
 	"""
 	Add some log by user!
@@ -36,7 +38,7 @@ def getBeatmapTime(beatmapID):
     return p
 
 def getUserSetting(userID, key):
-    query = glob.db.fetch('select int_value as i, str_value as s from user_settings where id = {} and name = "{}"'.format(userID, key))
+    query = glob.db.fetch('select int_value as i, str_value as s from user_settings where user_id = {} and name = "{}"'.format(userID, key))
     result = None
     if query is None:
         pass
@@ -71,7 +73,7 @@ def PPBoard(userID, relax):
     if result is not None:
         return result == 1
     result = glob.db.fetch(
-        "SELECT ppboard FROM {table}_stats WHERE id = {userid}".format(table='rx' if relax else 'users', userid=userID))
+        "SELECT ppboard FROM {table}_stats WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users', userid=userID))
     return result['ppboard']
 
 def BoardMode(userID, relax):
@@ -89,11 +91,11 @@ def InvisibleBoard(userID):
 def setScoreBoard(userID, relax):
     setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 0)
     glob.db.execute(
-        "UPDATE {table}_stats SET ppboard = 0 WHERE id = {userid}".format(table='rx' if relax else 'users', userid=userID))
+        "UPDATE {table}_stats SET ppboard = 0 WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users', userid=userID))
 
 def setPPBoard(userID, relax):
     setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 1)
-    glob.db.execute("UPDATE {table}_stats SET ppboard = 1 WHERE id = {userid}".format(table='rx' if relax else 'users', userid=userID))
+    glob.db.execute("UPDATE {table}_stats SET ppboard = 1 WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users', userid=userID))
 
 def setInvisibleBoard(userID, relax, b):
     setUserSetting(userID, "{}:board_visibility".format('global'), b)
@@ -102,12 +104,12 @@ def setInvisibleBoard(userID, relax, b):
 
 def noPPLimit(userID, relax):
     result = glob.db.fetch(
-        "SELECT unrestricted_pp FROM {table}_stats WHERE id = {userid}".format(table='rx' if relax else 'users',
+        "SELECT unrestricted_pp FROM {table}_stats WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users',
                                                                             userid=userID))
     return result['unrestricted_pp']
 
 def whitelistUserPPLimit(userID, table):
-    glob.db.execute("UPDATE {table}_stats SET unrestricted_pp = 1 WHERE id = {userid}".format(table='rx' if rx else 'users',
+    glob.db.execute("UPDATE {table}_stats SET unrestricted_pp = 1 WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if rx else 'users',
                                                                                            userid=userID))
 
 def incrementPlaytime(userID, gameMode=0, length=0):
