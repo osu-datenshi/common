@@ -9,6 +9,7 @@ except ImportError:
 
 from common import generalUtils
 from common.constants import gameModes, mods
+from common.constants import personalBestScores
 from common.constants import privileges
 from common.log import logUtils as log
 from common.ripple import passwordUtils, scoreUtils
@@ -37,6 +38,9 @@ def getBeatmapTime(beatmapID):
 
     return p
 
+# User Settings System
+# This allows the user and the dev to configure the game settings even more further without force adding columns like dumb
+# - Rei_Fan49
 def getUserSetting(userID, key):
     query = glob.db.fetch('select int_value as i, str_value as s from user_settings where user_id = {} and name = "{}"'.format(userID, key))
     result = None
@@ -49,7 +53,7 @@ def getUserSetting(userID, key):
     return result
 
 def setUserSetting(userID, key, value):
-    query = glob.db.fetch('select int_value as i, str_value as s from user_settings where user_id = {} and name = "{}"'.format(userID, key))
+    query = glob.db.fetch('select int_value as i, str_value as s from user_settings where user_id = {} and name = %s'.format(userID), [key])
     input = [None, None]
     if isinstance(value,int):
         input[0] = value
@@ -58,7 +62,10 @@ def setUserSetting(userID, key, value):
     if query is None:
         glob.db.execute('insert into user_settings (user_id, name, int_value, str_value) values (%s, %s, %s, %s)', [userID, key, *input])
     else:
-        glob.db.execute('update user_settings set int_value = %s, str_value = %s where user_id = {} and name = "{}"'.format(userID, key), [*input])
+        glob.db.execute('update user_settings set int_value = %s, str_value = %s where user_id = {} and name = %s'.format(userID), [*input, key])
+
+def resetUserSetting(userID, key):
+    glob.db.execute('delete from user_settings where user_id = {} and name = %s'.format(userID), [key])
 
 def getOrderedUserSetting(userID, key, prefix_order):
     orders = list(prefix_order) + ['global']
@@ -82,12 +89,6 @@ def BoardMode(userID, relax):
         return result
     return 0
 
-def InvisibleBoard(userID):
-    result = getOrderedUserSetting(userID, 'board_visibility', [])
-    if result is not None:
-        return result
-    return 0
-
 def setScoreBoard(userID, relax):
     setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 0)
     glob.db.execute(
@@ -97,10 +98,57 @@ def setPPBoard(userID, relax):
     setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 1)
     glob.db.execute("UPDATE {table}_stats SET ppboard = 1 WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users', userid=userID))
 
+def InvisibleBoard(userID):
+    """
+    Board visiblity
+    Not everyone wants to see leaderboard for a reason.
+    This feature allows you to hide specific scope of the leaderboard.
+    - Rei_Fan49
+    """
+    result = getOrderedUserSetting(userID, 'board_visibility', [])
+    if result is not None:
+        return result
+    return 0
+
 def setInvisibleBoard(userID, relax, b):
     setUserSetting(userID, "{}:board_visibility".format('global'), b)
     # setUserSetting(userID, "{}:board_visibility".format(('relax' if relax else 'standard')), b)
     # setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 2)
+
+def ScoreOverrideType(userID, relax):
+    """
+    Score Override Type
+    This allows the user to specify what kind of score override they should use.
+    Personally PP override is dumb for me, so I had to create this feature.
+    - Rei_Fan49
+    """
+    result = getOrderedUserSetting(userID, 'personal_best_overtake', [('relax' if relax else 'standard')])
+    if result is not None:
+        return result
+    return glob.conf.extra["lets"]["submit"]["score-overwrite"]
+
+def setScoreOverrideType(userID, relax, t):
+    k = "{}:personal_best_overtake".format(('relax' if relax else 'standard'))
+    if t not in personalBestScores.VALID_SCORE_TYPES:
+        resetUserSetting(userID, k)
+    else:
+        setUserSetting(userID, k, t)
+
+def PPAbuseFlag(userID, relax):
+    """
+    TODO: Another separate rank, but im too lazy to customize the redis.
+    If this ever implemented, just calculate those qualified maps into pp_abuse_flag
+    Idk if you should do this kind of Calculation
+    -> Check beatmap_md5, is it on qualified or not, if yes go to this route or else normal route
+    - Rei_Fan49
+    """
+    result = getOrderedUserSetting(userID, 'pp_abuser_rank', [('relax' if relax else 'standard')])
+    if result is not None:
+        return bool(result)
+    return False
+
+def setPPAbuseFlag(userID, key, b):
+    setUserSetting(userID, "{}:pp_abuser_rank".format(key), b)
 
 def noPPLimit(userID, relax):
     result = glob.db.fetch(
