@@ -31,4 +31,5 @@ ADMIN_REPLAY_WATCHER      = 1 << 23
 # low byte 3
 # AUTORANK_MANAGE, this is an extremely critical role, so just BAT/BN won't do.
 ADMIN_MANAGE_AUTORANK     = 1 << 24
+USER_VERIFIED_CEILING     = 1 << 25
 # groups

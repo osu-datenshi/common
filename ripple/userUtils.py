@@ -1785,9 +1785,11 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 	if support_new_limiter:
 		var_limit   = glob.conf.extra['lets']['submit']['pp-limiter'].get(mode_name + '-tolerant',False)
 		var_fullmod = glob.conf.extra['lets']['submit']['pp-limiter'].get(mode_name + '-tolerant-mod',False)
+		max_total   = glob.conf.extra['lets']['submit']['pp-limiter'].get(mode_name + '-tootall-ceil',5555)
 	else:
 		var_limit   = glob.conf.extra['lets']['submit'].get('tolerant-pp-limit',False)
 		var_fullmod = glob.conf.extra['lets']['submit'].get('tolerant-fullmod',False)
+		max_total   = 5555
 	# Check eligiblity of Variable Limiter
 	# - it'll go as is, if it's not FULLMOD
 	# - if it's FULLMOD, should check if VARIABLE_FULLMOD is on or not.
@@ -1817,7 +1819,7 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 		weight_pc, weight_pp = (limiter[4], limiter[5])
 		score_pc, score_pp = determine_score(stat.playcount, *play_count_limits), determine_score(stat.pp, *total_pp_limits)
 		total_score = score_pc * weight_pc + score_pp * weight_pp
-		log.info("PP Limit Score: {}/{}".format(int(total_score), weight_pc + weight_pp))
+		log.debug("PP Limit Score: {}/{}".format(int(total_score), weight_pc + weight_pp))
 		return pp_limits[0] + int((pp_limits[1] - pp_limits[0]) * (total_score / (weight_pc + weight_pp)))
 	pass
 	if support_new_limiter:
@@ -1853,4 +1855,4 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 			score = fullmod_pp
 		else:
 			score = 999999 if gameMode > 0 else (relax_pp if relax else basic_pp)
-	return (score, var_limit, can_limit)
+	return (score, var_limit, can_limit, max_total)
