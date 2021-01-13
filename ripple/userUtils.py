@@ -1817,7 +1817,7 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 		total_pp_limits   = tuple(limiter[3])
 		# scoring
 		weight_pc, weight_pp = (limiter[4], limiter[5])
-		score_pc, score_pp = determine_score(stat.playcount, *play_count_limits), determine_score(stat.pp, *total_pp_limits)
+		score_pc, score_pp = determine_score(stat['playcount'], *play_count_limits), determine_score(stat['pp'], *total_pp_limits)
 		total_score = score_pc * weight_pc + score_pp * weight_pp
 		log.debug("PP Limit Score: {}/{}".format(int(total_score), weight_pc + weight_pp))
 		return pp_limits[0] + int((pp_limits[1] - pp_limits[0]) * (total_score / (weight_pc + weight_pp)))
