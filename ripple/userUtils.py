@@ -150,6 +150,22 @@ def PPAbuseFlag(userID, relax):
 def setPPAbuseFlag(userID, key, b):
     setUserSetting(userID, "{}:pp_abuser_rank".format(key), b)
 
+def PPScoreInformation(userID, relax):
+    """
+    PP Score Information
+    Allows you to subscribe to Yohane to receive amount of PPs obtained in a map, for every clears.
+    - Rei_Fan49
+    """
+    result = getOrderedUserSetting(userID, 'pp_gain_information', [('relax' if False else 'standard')])
+    if result is not None:
+        return bool(result)
+    return False
+
+def setPPScoreInformation(userID, relax, t):
+    # k = "{}:pp_gain_information".format(('relax' if False else 'standard'))
+    k = "global:pp_gain_information"
+    setUserSetting(userID, k, t)
+
 def noPPLimit(userID, relax):
     result = glob.db.fetch(
         "SELECT unrestricted_pp FROM {table}_stats WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users',
