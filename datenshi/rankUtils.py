@@ -152,5 +152,4 @@ def announceMapRaw(mapData, status, autoFlag=False, banchoCallback=None):
         embed.set_footer(text='This map was {} from in-game'.format(status))
         webhook.add_embed(embed)
         webhook.execute()
-        discordCallback(discordMsg, idTuple)
     
