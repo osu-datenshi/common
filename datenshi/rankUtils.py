@@ -115,7 +115,7 @@ def announceMap(idTuple, status, banchoCallback=None, autorankFlag=False):
     announceMapRaw(beatmapData, status, autoFlag=autorankFlag, banchoCallback=banchoCallback)
 
 def announceMapRaw(mapData, status, autoFlag=False, banchoCallback=None):
-    supportBancho  = 'BOT_NAME' in dir(glob) and callable(banchoCallback)
+    supportBancho  = callable(banchoCallback) # 'BOT_NAME' in dir(glob) is not a must
     supportDiscord = 'discord' in glob.conf.config and 'ranked-map' in glob.conf.config['discord']
     if autoFlag:
         status = f"auto-{status}"
