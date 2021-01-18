@@ -133,16 +133,16 @@ def announceMapRaw(mapData, status, autoFlag=False, banchoCallback=None):
         # use API
         pass
     if supportDiscord:
-		webhook = DiscordWebhook(url=glob.conf.config["discord"]["ranked-map"])
-		embed = DiscordEmbed(description='{}\nDownload : https://osu.ppy.sh/s/{}'.format(msg, mapData["beatmapset_id"]), color=242424)
-		embed.set_thumbnail(url='https://b.ppy.sh/thumb/{}.jpg'.format(str(mapData["beatmapset_id"])))
+        webhook = DiscordWebhook(url=glob.conf.config["discord"]["ranked-map"])
+        embed = DiscordEmbed(description='{}\nDownload : https://osu.ppy.sh/s/{}'.format(msg, mapData["beatmapset_id"]), color=242424)
+        embed.set_thumbnail(url='https://b.ppy.sh/thumb/{}.jpg'.format(str(mapData["beatmapset_id"])))
         userID = None
         if userID:
-		      embed.set_author(name='{}'.format(ranker), url='https://osu.troke.id/u/{}'.format(str(userID)), icon_url='https://a.troke.id/{}'.format(str(userID)))
+            embed.set_author(name='{}'.format(ranker), url='https://osu.troke.id/u/{}'.format(str(userID)), icon_url='https://a.troke.id/{}'.format(str(userID)))
         else:
-		      embed.set_author(name='{}'.format(ranker), url=None, icon_url=None)
-		embed.set_footer(text='This map was {} from in-game'.format(status))
-		webhook.add_embed(embed)
-		webhook.execute()
+            embed.set_author(name='{}'.format(ranker), url=None, icon_url=None)
+        embed.set_footer(text='This map was {} from in-game'.format(status))
+        webhook.add_embed(embed)
+        webhook.execute()
         discordCallback(discordMsg, idTuple)
     
