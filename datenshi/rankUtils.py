@@ -142,7 +142,7 @@ def announceMapRaw(mapData, status, autoFlag=False, banchoCallback=None):
         pass
     if supportDiscord:
         webhook = DiscordWebhook(url=glob.conf.config["discord"]["ranked-map"])
-        embed = DiscordEmbed(description='{}\nDownload : https://osu.ppy.sh/s/{}'.format(msg, mapData["beatmapset_id"]), color=242424)
+        embed = DiscordEmbed(description='{}\nDownload : https://osu.ppy.sh/s/{}'.format(discordMsg, mapData["beatmapset_id"]), color=242424)
         embed.set_thumbnail(url='https://b.ppy.sh/thumb/{}.jpg'.format(str(mapData["beatmapset_id"])))
         userID = None
         if userID:
