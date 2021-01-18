@@ -28,6 +28,8 @@ def __daten_import_call__(variableList):
         I know this is significantly slower, and I do understand why I do it.
         """
         mapIDs = [r['beatmap_id'] for r in glob.db.fetchAll('SELECT beatmap_id FROM beatmaps WHERE beatmapset_id = %s', (mapsetID,))]
+        if not mapIDs:
+            return None
         if isinstance(status, dict):
             # assign status by map ID
             reverseMap = {}
@@ -82,8 +84,9 @@ def __daten_import_call__(variableList):
         else:
             return None
         glob.db.execute("UPDATE beatmaps SET ranked = {}, ranked_status_freezed = {}, rankedby = {} WHERE beatmap_id in ({})".format( \
-          rankTypeID, freezeStatus, rankUserID,          \
-          ','.join(str(mapID) for mapID in mapList)) \
+          rankTypeID, freezeStatus, rankUserID,       \
+          ','.join(['%s'] * len(mapList))),  \
+          [*(mapList if mapList else [0])]
         )
     
     variableList['editSet'] = editSet
