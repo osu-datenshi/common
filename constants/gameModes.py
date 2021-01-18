@@ -34,7 +34,7 @@ def getGamemodeFull(gameMode):
 	elif gameMode == CTB:
 		return "Catch The Beat"
 	else:
-		return "osu!mania"
+		return "osumania"
 
 def getGameModeForPrinting(gameMode):
 	"""
@@ -50,4 +50,4 @@ def getGameModeForPrinting(gameMode):
 	elif gameMode == CTB:
 		return "CatchTheBeat"
 	else:
-		return "osu!mania"
+		return "osumania"
