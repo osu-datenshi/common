@@ -15,6 +15,11 @@ from common.ripple import userUtils
 # from common.ripple import passwordUtils, scoreUtils
 from objects import glob
 
+try:
+    from discord_webhook import DiscordWebhook, DiscordEmbed
+except ImportError:
+    pass
+
 tier = ('unranked', 'pending', 'qualified', 'loved', 'ranked')
 
 def __daten_import_call__(variableList):
