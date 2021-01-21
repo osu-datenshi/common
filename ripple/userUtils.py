@@ -1849,14 +1849,14 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 			else:
 				limiter = cfg[mode_name + "-vanilla-fm"]
 			if modded and f"{mode_name}-modded-fm" in cfg:
-				limiter = cfg[mode_name + "-modded-fm]
+				limiter = cfg.get(mode_name + "-modded-fm",limiter)
 		else:
 			if relax:
 				limiter = cfg["max-relax-pp-formula"]
 			else:
 				limiter = cfg["max-vanilla-pp-formula"]
 			if modded and "max-fullmod-pp-formula" in cfg:
-				limiter = cfg["max-fullmod-pp-formula"] or limiter
+				limiter = cfg.get("max-fullmod-pp-formula",limiter)
 		score = calculate_limit(limiter, current_stats)
 	else:
 		if support_new_limiter:
