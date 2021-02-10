@@ -1,0 +1,1 @@
+RANKING_SCOREV2 = False
