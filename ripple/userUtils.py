@@ -231,19 +231,25 @@ def getUserStatsRx(userID, gameMode):
     :param gameMode: game mode number
     :return: dictionary with result
     """
+    if gameMode == 3:
+        return getUserStats(userID, gameMode)
+    
     modeForDB = gameModes.getGameModeForDB(gameMode)
 
     # Get stats
-    if gameMode == 3:
-        stats = glob.db.fetch("""SELECT
-                            ranked_score_{gm} AS rankedScore,
-                            avg_accuracy_{gm} AS accuracy,
-                            playcount_{gm} AS playcount,
-                            total_score_{gm} AS totalScore,
-                            pp_{gm} AS pp
-                            FROM users_stats WHERE id = %s LIMIT 1""".format(gm=modeForDB), [userID])
+    stats = glob.db.fetch("""SELECT
+                        ranked_score_{gm} AS rankedScore,
+                        avg_accuracy_{gm} AS accuracy,
+                        playcount_{gm} AS playcount,
+                        total_score_{gm} AS totalScore,
+                        pp_{gm} AS pp
+                        FROM rx_stats WHERE id = %s LIMIT 1""".format(gm=modeForDB), [userID])
 
-    else:
+    # Get game rank
+    stats["gameRank"] = getGameRankRx(userID, gameMode)
+    # Return stats + game rank
+    return stats
+
 
         # Get stats
         stats = glob.db.fetch("""SELECT
