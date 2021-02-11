@@ -11,6 +11,7 @@ from common import generalUtils
 from common.constants import gameModes, mods
 from common.constants import personalBestScores
 from common.constants import privileges
+from common.constants import features
 from common.log import logUtils as log
 from common.ripple import passwordUtils, scoreUtils
 from objects import glob
@@ -219,10 +220,8 @@ def getUserStats(userID, gameMode):
 
     # Get game rank
     stats["gameRank"] = getGameRank(userID, gameMode)
-
     # Return stats + game rank
     return stats
-
 
 def getUserStatsRx(userID, gameMode):
     """
@@ -277,7 +276,6 @@ def getMaxCombo(userID, gameMode):
 
     # Return stats + game rank
     return maxcombo["max_combo"]
-
 
 def getMaxComboRX(userID, gameMode):
     """
@@ -487,7 +485,6 @@ def updateLevel(userID, gameMode=0, totalScore=0):
     # Save new level
     glob.db.execute("UPDATE users_stats SET level_{m} = %s WHERE id = %s LIMIT 1".format(m=mode), [level, userID])
 
-
 def updateLevelRX(userID, gameMode=0, totalScore=0):
     """
     Update level in DB for userID relative to gameMode
@@ -596,7 +593,6 @@ def calculatePP(userID, gameMode):
         (userID, gameMode)
     )))
 
-
 def calculatePPRelax(userID, gameMode):
     """
     Calculate userID's total PP for gameMode
@@ -626,7 +622,6 @@ def updateAccuracy(userID, gameMode):
     glob.db.execute("UPDATE users_stats SET avg_accuracy_{m} = %s WHERE id = %s LIMIT 1".format(m=mode),
                     [newAcc, userID])
 
-
 def updateAccuracyRX(userID, gameMode):
     """
     Update accuracy value for userID relative to gameMode in DB
@@ -655,7 +650,6 @@ def updatePP(userID, gameMode):
             userID
         )
     )
-
 
 def updatePPRelax(userID, gameMode, loggingEnabled=False):
     """
@@ -804,14 +798,12 @@ def incrementUserBeatmapPlaycount(userID, gameMode, beatmapID):
         (userID, beatmapID, gameMode)
     )
 
-
 def incrementUserBeatmapPlaycountRX(userID, gameMode, beatmapID):
     glob.db.execute(
         "INSERT INTO rx_beatmap_playcount (user_id, beatmap_id, game_mode, playcount) "
         "VALUES (%s, %s, %s, 1) ON DUPLICATE KEY UPDATE playcount = playcount + 1",
         (userID, beatmapID, gameMode)
     )
-
 
 def updateLatestActivity(userID):
     """
@@ -821,7 +813,6 @@ def updateLatestActivity(userID):
     :return:
     """
     glob.db.execute("UPDATE users SET latest_activity = %s WHERE id = %s LIMIT 1", [int(time.time()), userID])
-
 
 def getRankedScore(userID, gameMode):
     """
@@ -837,7 +828,6 @@ def getRankedScore(userID, gameMode):
         return result["ranked_score_{}".format(mode)]
     else:
         return 0
-
 
 def getPP(userID, gameMode):
     """
@@ -855,7 +845,6 @@ def getPP(userID, gameMode):
     else:
         return 0
 
-
 def incrementReplaysWatched(userID, gameMode):
     """
     Increment userID's replays watched by others relative to gameMode
@@ -868,7 +857,6 @@ def incrementReplaysWatched(userID, gameMode):
     glob.db.execute(
         "UPDATE users_stats SET replays_watched_{mode}=replays_watched_{mode}+1 WHERE id = %s LIMIT 1".format(
             mode=mode), [userID])
-
 
 def incrementReplaysWatchedRX(userID, gameMode):
     """
