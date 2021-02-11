@@ -823,6 +823,16 @@ def updateStats(userID, score_):
 
     # Get gamemode for db
     mode = scoreUtils.readableGameMode(score_.gameMode)
+    def recalcFlag():
+        timeThisPlay = int(time.time())
+        timeLastPlay = glob.db.fetch('select `time` from scores where userid = %s and id < %s and time < %s', [userID, score_.scoreID, timeThisPlay])
+        if timeLastPlay is None:
+            return False
+        return timeLastPlay['time'] < features.RANKED_SCORE_RECALC and timeThisPlay >= features.RANKED_SCORE_RECALC
+    needRecalc = recalcFlag()
+    
+    if needRecalc:
+        glob.db.execute('UPDATE users_stats set ranked_score_{2} = (SELECT SUM(score) FROM scores WHERE userid = {0} AND play_mode = {1} AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3))) WHERE id = {0}'.format(userID, score_.gameMode, mode))
 
     # Update total score, playcount and play time
     if score_.playTime is not None:
@@ -845,17 +855,17 @@ def updateStats(userID, score_):
     # Update level, accuracy and ranked score only if we have passed the song
     if score_.passed:
         # Update ranked score
-        glob.db.execute(
-            "UPDATE users_stats SET ranked_score_{m}=ranked_score_{m}+%s WHERE id = %s LIMIT 1".format(m=mode),
-            (score_.rankedScoreIncrease, userID)
-        )
+        if not needRecalc:
+            glob.db.execute(
+                "UPDATE users_stats SET ranked_score_{m}=ranked_score_{m}+%s WHERE id = %s LIMIT 1".format(m=mode),
+                (score_.rankedScoreIncrease, userID)
+            )
 
         # Update accuracy
         updateAccuracy(userID, score_.gameMode)
 
         # Update pp
         updatePP(userID, score_.gameMode)
-
 
 def updateStatsRx(userID, score_):
     """
@@ -874,6 +884,16 @@ def updateStatsRx(userID, score_):
 
     # Get gamemode for db
     mode = scoreUtils.readableGameMode(score_.gameMode)
+    def recalcFlag():
+        timeThisPlay = int(time.time())
+        timeLastPlay = glob.db.fetch('select `time` from scores_relax where userid = %s and id < %s and time < %s', [userID, score_.scoreID, timeThisPlay])
+        if timeLastPlay is None:
+            return False
+        return timeLastPlay['time'] < features.RANKED_SCORE_RECALC and timeThisPlay >= features.RANKED_SCORE_RECALC
+    needRecalc = recalcFlag()
+    
+    if needRecalc:
+        glob.db.execute('UPDATE rx_stats set ranked_score_{2} = (SELECT SUM(score) FROM scores_relax WHERE userid = {0} AND play_mode = {1} AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3))) WHERE id = {0}'.format(userID, score_.gameMode, mode))
 
     # Update total score, playcount and play time
     if score_.playTime is not None:
@@ -896,16 +916,79 @@ def updateStatsRx(userID, score_):
     # Update level, accuracy and ranked score only if we have passed the song
     if score_.passed:
         # Update ranked score
-        glob.db.execute(
-            "UPDATE rx_stats SET ranked_score_{m}=ranked_score_{m}+%s WHERE id = %s LIMIT 1".format(m=mode),
-            (score_.rankedScoreIncrease, userID)
-        )
+        if not needRecalc:
+            glob.db.execute(
+                "UPDATE rx_stats SET ranked_score_{m}=ranked_score_{m}+%s WHERE id = %s LIMIT 1".format(m=mode),
+                (score_.rankedScoreIncrease, userID)
+            )
 
         # Update accuracy
         updateAccuracyRX(userID, score_.gameMode)
 
         # Update pp
         updatePPRelax(userID, score_.gameMode)
+
+if features.RANKING_SCOREV2:
+    def updateStatsAlt(userID, score_):
+        """
+        Update stats (playcount, total score, ranked score, level bla bla)
+        with data relative to a score object
+    
+        :param userID:
+        :param score_: score object
+        :param beatmap_: beatmap object. Optional. If not passed, it'll be determined by score_.
+        """
+    
+        # Make sure the user exists
+        if not exists(userID):
+            log.warning("User {} doesn't exist.".format(userID))
+            return
+    
+        # Get gamemode for db
+        mode = scoreUtils.readableGameMode(score_.gameMode)
+        def recalcFlag():
+            timeThisPlay = int(time.time())
+            timeLastPlay = glob.db.fetch('select `time` from scores_alternative where userid = %s and id < %s and time < %s', [userID, score_.scoreID, timeThisPlay])
+            if timeLastPlay is None:
+                return False
+            return timeLastPlay['time'] < features.RANKED_SCORE_RECALC and timeThisPlay >= features.RANKED_SCORE_RECALC
+        needRecalc = recalcFlag()
+        
+        if needRecalc:
+            glob.db.execute('UPDATE alternative_stats set ranked_score_{2} = (SELECT SUM(score) FROM scores_alternative WHERE userid = {0} AND play_mode = {1} AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3))) WHERE id = {0}'.format(userID, score_.gameMode, mode))
+    
+        # Update total score, playcount and play time
+        if score_.playTime is not None:
+            realPlayTime = score_.playTime
+        else:
+            realPlayTime = score_.fullPlayTime
+    
+        glob.db.execute(
+            "UPDATE alternative_stats SET total_score_{m}=total_score_{m}+%s, playcount_{m}=playcount_{m}+1, "
+            "playtime_{m} = playtime_{m} + %s "
+            "WHERE id = %s LIMIT 1".format(
+                m=mode
+            ),
+            (score_.score, realPlayTime, userID)
+        )
+    
+        # Calculate new level and update it
+        updateLevelAlt(userID, score_.gameMode)
+    
+        # Update level, accuracy and ranked score only if we have passed the song
+        if score_.passed:
+            # Update ranked score
+            if not needRecalc:
+                glob.db.execute(
+                    "UPDATE alternative_stats SET ranked_score_{m}=ranked_score_{m}+%s WHERE id = %s LIMIT 1".format(m=mode),
+                    (score_.rankedScoreIncrease, userID)
+                )
+    
+            # Update accuracy
+            updateAccuracyAlt(userID, score_.gameMode)
+    
+            # Update pp
+            updatePPAlt(userID, score_.gameMode)
 
 def refreshStatsRx(userID, gameMode):
     """
