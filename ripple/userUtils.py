@@ -1755,6 +1755,18 @@ def getClan(userID):
         return username
     return "[" + clanInfo["tag"] + "] " + username
 
+def getUserCountryClan(userID):
+    """
+    this is just simply shitty name.
+    """
+    clanInfo = glob.db.fetch(
+        "SELECT clans.tag, clans.id, user_clans.clan, user_clans.user FROM user_clans LEFT JOIN clans ON clans.id = user_clans.clan WHERE user_clans.user = %s LIMIT 1",
+        [userID])
+    username = getUsername(userID)
+
+    if clanInfo is None:
+        return "C00000000"
+    return "C{:08d}".format(clanInfo['id'])
 
 def updateTotalHits(userID=0, gameMode=gameModes.STD, newHits=0, score=None):
     if score is None and userID == 0:
