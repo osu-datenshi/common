@@ -523,7 +523,7 @@ def calculateAccuracy(userID, gameMode):
     """
     # Get best accuracy scores
     bestAccScores = glob.db.fetchAll(
-        "SELECT accuracy FROM scores WHERE userid = %s AND play_mode = %s AND completed = 3 ORDER BY pp DESC LIMIT 500",
+        "SELECT accuracy FROM scores WHERE userid = %s AND play_mode = %s AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3)) ORDER BY pp DESC LIMIT 500",
         (userID, gameMode)
     )
 
@@ -545,8 +545,7 @@ def calculateAccuracy(userID, gameMode):
             v = 0
     return v
 
-
-def calculateAccuracyRX(userID, gameMode):
+def calculateAccuracyRelax(userID, gameMode):
     """
     Calculate accuracy value for userID relative to gameMode
  
@@ -556,7 +555,7 @@ def calculateAccuracyRX(userID, gameMode):
     """
     # Get best accuracy scores
     bestAccScores = glob.db.fetchAll(
-        "SELECT accuracy FROM scores_relax WHERE userid = %s AND play_mode = %s AND completed = 3 ORDER BY pp DESC LIMIT 500",
+        "SELECT accuracy FROM scores_relax WHERE userid = %s AND play_mode = %s AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3)) ORDER BY pp DESC LIMIT 500",
         [userID, gameMode])
 
     v = 0
@@ -577,6 +576,41 @@ def calculateAccuracyRX(userID, gameMode):
             v = 0
     return v
 
+if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
+    def calculateAccuracyRX(userID, gameMode):
+        return calculateAccuracyRelax(userID, gameMode)
+
+if features.RANKING_SCOREV2:
+    def calculateAccuracyAlt(userID, gameMode):
+        """
+        Calculate accuracy value for userID relative to gameMode
+     
+        :param userID: user id
+        :param gameMode: game mode number
+        :return: new accuracy
+        """
+        # Get best accuracy scores
+        bestAccScores = glob.db.fetchAll(
+            "SELECT accuracy FROM scores_alternative WHERE userid = %s AND play_mode = %s AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3)) ORDER BY pp DESC LIMIT 500",
+            [userID, gameMode])
+    
+        v = 0
+        if bestAccScores is not None:
+            # Calculate weighted accuracy
+            totalAcc = 0
+            divideTotal = 0
+            k = 0
+            for i in bestAccScores:
+                add = int((0.95 ** k) * 100)
+                totalAcc += i["accuracy"] * add
+                divideTotal += add
+                k += 1
+            # echo "$add - $totalacc - $divideTotal\n"
+            if divideTotal != 0:
+                v = totalAcc / divideTotal
+            else:
+                v = 0
+        return v
 
 def calculatePP(userID, gameMode):
     """
@@ -771,7 +805,6 @@ def updateStatsRx(userID, score_):
         # Update pp
         updatePPRelax(userID, score_.gameMode)
 
-
 def refreshStatsRx(userID, gameMode):
     """
     Update stats (playcount, total score, ranked score, level bla bla)
@@ -885,7 +918,6 @@ def getAqn(userID):
     else:
         return False
 
-
 def setAqn(userID, value=1):
     """
     Set AQN folder status for userID
@@ -895,7 +927,6 @@ def setAqn(userID, value=1):
     :return:
     """
     glob.db.fetch("UPDATE users SET aqn = %s WHERE id = %s LIMIT 1", [value, userID])
-
 
 def IPLog(userID, ip):
     """
@@ -907,7 +938,6 @@ def IPLog(userID, ip):
     """
     glob.db.execute("""INSERT INTO ip_user (userid, ip, occurencies) VALUES (%s, %s, '1')
                         ON DUPLICATE KEY UPDATE occurencies = occurencies + 1""", [userID, ip])
-
 
 def checkBanchoSession(userID, ip=""):
     """
@@ -923,7 +953,6 @@ def checkBanchoSession(userID, ip=""):
     else:
         return glob.redis.exists("peppy:sessions:{}".format(userID))
 
-
 def is2FAEnabled(userID):
     """
     Returns True if 2FA/Google auth 2FA is enable for `userID`
@@ -934,7 +963,6 @@ def is2FAEnabled(userID):
     return glob.db.fetch("SELECT 2fa_totp.userid FROM 2fa_totp WHERE userid = %(userid)s AND enabled = 1 LIMIT 1", {
         "userid": userID
     }) is not None
-
 
 def check2FA(userID, ip):
     """
@@ -951,7 +979,6 @@ def check2FA(userID, ip):
     result = glob.db.fetch("SELECT id FROM ip_user WHERE userid = %s AND ip = %s", [userID, ip])
     return True if result is None else False
 
-
 def isAllowed(userID):
     """
     Check if userID is not banned or restricted
@@ -964,7 +991,6 @@ def isAllowed(userID):
         return (result["privileges"] & privileges.USER_NORMAL) and (result["privileges"] & privileges.USER_PUBLIC)
     else:
         return False
-
 
 def isRestricted(userID):
     """
@@ -979,7 +1005,6 @@ def isRestricted(userID):
     else:
         return False
 
-
 def isBanned(userID):
     """
     Check if userID is banned
@@ -992,7 +1017,6 @@ def isBanned(userID):
         return not (result["privileges"] & 3 > 0)
     else:
         return True
-
 
 def isLocked(userID):
     """
@@ -1009,7 +1033,6 @@ def isLocked(userID):
         )
     else:
         return True
-
 
 def ban(userID):
     """
@@ -1029,7 +1052,6 @@ def ban(userID):
     # Remove the user from global and country leaderboards
     removeFromLeaderboard(userID)
 
-
 def unban(userID):
     """
     Unban userID
@@ -1040,7 +1062,6 @@ def unban(userID):
     glob.db.execute("UPDATE users SET privileges = privileges | %s, ban_datetime = 0 WHERE id = %s LIMIT 1",
                     [(privileges.USER_NORMAL | privileges.USER_PUBLIC), userID])
     glob.redis.publish("peppy:ban", userID)
-
 
 def restrict(userID):
     """
@@ -1061,7 +1082,6 @@ def restrict(userID):
         # Remove the user from global and country leaderboards
         removeFromLeaderboard(userID)
 
-
 def unrestrict(userID):
     """
     Unrestrict userID.
@@ -1071,7 +1091,6 @@ def unrestrict(userID):
     :return:
     """
     unban(userID)
-
 
 def appendNotes(userID, notes, addNl=True, trackDate=True):
     """
@@ -1089,7 +1108,6 @@ def appendNotes(userID, notes, addNl=True, trackDate=True):
         notes = "\n{}".format(notes)
     glob.db.execute("UPDATE users SET notes=CONCAT(COALESCE(notes, ''),%s) WHERE id = %s LIMIT 1", [notes, userID])
 
-
 def getPrivileges(userID):
     """
     Return `userID`'s privileges
@@ -1103,7 +1121,6 @@ def getPrivileges(userID):
     else:
         return 0
 
-
 def getSilenceEnd(userID):
     """
     Get userID's **ABSOLUTE** silence end UNIX time
@@ -1113,7 +1130,6 @@ def getSilenceEnd(userID):
     :return: UNIX time
     """
     return glob.db.fetch("SELECT silence_end FROM users WHERE id = %s LIMIT 1", [userID])["silence_end"]
-
 
 def silence(userID, seconds, silenceReason, author=1):
     """
@@ -1140,7 +1156,6 @@ def silence(userID, seconds, silenceReason, author=1):
     else:
         log.rap(author, "has removed {}'s silence".format(targetUsername), True)
 
-
 def getTotalScore(userID, gameMode):
     """
     Get `userID`'s total score relative to `gameMode`
@@ -1153,7 +1168,6 @@ def getTotalScore(userID, gameMode):
     return glob.db.fetch("SELECT total_score_" + modeForDB + " FROM users_stats WHERE id = %s LIMIT 1", [userID])[
         "total_score_" + modeForDB]
 
-
 def getAccuracy(userID, gameMode):
     """
     Get `userID`'s average accuracy relative to `gameMode`
@@ -1165,7 +1179,6 @@ def getAccuracy(userID, gameMode):
     modeForDB = gameModes.getGameModeForDB(gameMode)
     return glob.db.fetch("SELECT avg_accuracy_" + modeForDB + " FROM users_stats WHERE id = %s LIMIT 1", [userID])[
         "avg_accuracy_" + modeForDB]
-
 
 def getGameRank(userID, gameMode):
     """
@@ -1181,7 +1194,6 @@ def getGameRank(userID, gameMode):
     else:
         return int(position) + 1
 
-
 def getGameRankRx(userID, gameMode):
     """
     Get `userID`'s **in-game rank** (eg: #1337) relative to gameMode
@@ -1194,7 +1206,6 @@ def getGameRankRx(userID, gameMode):
         return 0
     else:
         return int(position) + 1
-
 
 def getPlaycount(userID, gameMode):
     """
@@ -1402,7 +1413,6 @@ def isInAnyPrivilegeGroup(userID, groups):
         ) if x is not None
     )
 
-
 def logHardware(userID, hashes, activation=False):
     """
     Hardware log
@@ -1518,7 +1528,6 @@ def resetPendingFlag(userID, success=True):
         glob.db.execute("UPDATE users SET privileges = privileges | %s WHERE id = %s LIMIT 1",
                         [(privileges.USER_PUBLIC | privileges.USER_NORMAL), userID])
 
-
 def verifyUser(userID, hashes):
 	"""
 	Activate `userID`'s account.
@@ -1598,7 +1607,6 @@ def verifyUser(userID, hashes):
 		#log.info("User **{}** ({}) has verified his account with hash set _{}_".format(username, userID, hashes[2:5]), "cm")
 	return True
 
-
 def hasVerifiedHardware(userID):
     """
     Checks if `userID` has activated his account through HWID
@@ -1610,7 +1618,6 @@ def hasVerifiedHardware(userID):
     if data is not None:
         return True
     return False
-
 
 def getDonorExpire(userID):
     """
@@ -1624,14 +1631,11 @@ def getDonorExpire(userID):
         return data["donor_expire"]
     return 0
 
-
 class invalidUsernameError(Exception):
     pass
 
-
 class usernameAlreadyInUseError(Exception):
     pass
-
 
 def safeUsername(username):
     """
@@ -1724,19 +1728,16 @@ def unlockAchievement(userID, achievementID):
     glob.db.execute("INSERT INTO users_achievements (user_id, achievement_id, `time`) VALUES"
                     "(%s, %s, %s)", [userID, achievementID, int(time.time())])
 
-
 def getAchievementsVersion(userID):
     result = glob.db.fetch("SELECT achievements_version FROM users WHERE id = %s LIMIT 1", [userID])
     if result is None:
         return None
     return result["achievements_version"]
 
-
 def updateAchievementsVersion(userID):
     glob.db.execute("UPDATE users SET achievements_version = %s WHERE id = %s LIMIT 1", [
         glob.ACHIEVEMENTS_VERSION, userID
     ])
-
 
 def getClan(userID):
     """
