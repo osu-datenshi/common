@@ -457,6 +457,7 @@ if features.RANKING_SCOREV2:
 def _genCalcAcc(n,i):
     t = modeSwitches.score[i]
     def acc(userID, gameMode):
+        
         """
         Calculate accuracy value for userID relative to gameMode
 
@@ -481,9 +482,9 @@ def _genCalcAcc(n,i):
             totalAcc = 0
             divideTotal = 0
             k = 0
-            for i in bestAccScores:
+            for ii in bestAccScores:
                 add = int((0.95 ** k) * 100)
-                totalAcc += i["accuracy"] * add
+                totalAcc += ii["accuracy"] * add
                 divideTotal += add
                 k += 1
             # echo "$add - $totalacc - $divideTotal\n"
