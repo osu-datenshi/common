@@ -198,12 +198,12 @@ def _genIncTime(n,i):
         else:
             print("Something went wrong...")
     globals()[n] = inc
-_getIncTime('incrementPlaytime',0)
-_getIncTime('incrementPlaytimeRelax',1)
+_genIncTime('incrementPlaytime',0)
+_genIncTime('incrementPlaytimeRelax',1)
 if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
     incrementPlaytimeRX = incrementPlaytimeRelax
 if features.RANKING_SCOREV2:
-    _getIncTime('incrementPlaytimeAlt',2)
+    _genIncTime('incrementPlaytimeAlt',2)
 
 def _genObtainStat(n,i,mm):
     t = modeSwitches.score[i]
@@ -604,7 +604,7 @@ def _genUpdateStat(n,i,lf):
             if features.MASTER_SCORE_TABLE:
                 timeLastPlay = glob.db.fetch('select `time` from scores_master where userid = %s and play_mode = %s and id < %s and time < %s and special_mode = %s',
                     [userID, s.gameMode, s.scoreID, timeThisPlay, i])
-            else
+            else:
                 timeLastPlay = glob.db.fetch('select `time` from {} where userid = %s and play_mode = %s and id < %s and time < %s'.format(t_score),
                     [userID, s.gameMode, s.scoreID, timeThisPlay])
             if timeLastPlay is None:
@@ -848,7 +848,7 @@ def _genUpdateHits(n,i):
             userID = score.playerUserID
         glob.db.execute(
             "UPDATE {t} SET total_hits_{gm} = total_hits_{gm} + %s WHERE id = %s LIMIT 1".format(
-                t=t
+                t=t,
                 gm=gameModes.getGameModeForDB(gameMode)
             ),
             (newHits, userID)
