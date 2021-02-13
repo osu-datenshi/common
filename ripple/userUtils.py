@@ -1726,4 +1726,4 @@ _wipe()
 del _wipe
 
 if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    log.warning("Developer Warning. Tidy up requested on normalizing the whole code without mixing bunch of Relax/R-X/R-x thing. Please normalize into relax and then add 'relax' into the DEPRECATION flag.")
+    print("[!] PLEASE NORMALIZE THE RELAX ABBREVIATION IN THIS FILE.")
