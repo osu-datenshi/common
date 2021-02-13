@@ -187,7 +187,7 @@ def whitelistUserPPLimit(userID, relax, value=1):
     glob.db.execute("UPDATE {table}_stats SET unrestricted_pp = %s WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users',
                                                                                            userid=userID),[value])
 def _genIncTime(n,i):
-    t = modeSwitches.score[i]
+    t = modeSwitches.stats[i]
     def inc(userID,gameMode=0,length=0):
         modeForDB = gameModes.getGameModeForDB(gameMode)
         result = glob.db.fetch("SELECT playtime_{gm} as playtime FROM {t} WHERE id = %s".format(t=t,gm=modeForDB),
