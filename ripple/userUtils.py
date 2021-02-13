@@ -1715,13 +1715,15 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 	return (score, var_limit, can_limit, max_total)
 
 # Delete all generators
-to_d = []
-for k,v in globals().items():
-    if callable(v) and k.startswith('_gen'):
-        to_d.append(k)
-for k in to_d:
-    del globals()[k]
-del to_d
+def _wipe():
+    to_d = []
+    for k,v in globals().items():
+        if callable(v) and k.startswith('_gen'):
+            to_d.append(k)
+    for k in to_d:
+        del globals()[k]
+_wipe()
+del _wipe
 
 if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
     log.warning("Developer Warning. Tidy up requested on normalizing the whole code without mixing bunch of Relax/R-X/R-x thing. Please normalize into relax and then add 'relax' into the DEPRECATION flag.")
