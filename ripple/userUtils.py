@@ -647,12 +647,12 @@ def _genUpdateStat(n,i,lf):
             lf[2](userID, s.gameMode)
         pass
     globals()[n] = stat
-_genUpdateStat('updateStats',0,(updatelevel, updateAccuracy, updatePP))
-_genUpdateStat('updateStatsRelax',1,(updatelevelRelax, updateAccuracyRelax, updatePPRelax))
+_genUpdateStat('updateStats',0,(updateLevel, updateAccuracy, updatePP))
+_genUpdateStat('updateStatsRelax',1,(updateLevelRelax, updateAccuracyRelax, updatePPRelax))
 if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
     updateStatsRx = updateStatsRelax
 if features.RANKING_SCOREV2:
-    _genUpdateStat('updateStatsAlt',2,(updatelevelAlt, updateAccuracyAlt, updatePPAlt))
+    _genUpdateStat('updateStatsAlt',2,(updateLevelAlt, updateAccuracyAlt, updatePPAlt))
 
 def _genRefreshStat(n,f):
     def stat(userID, gameMode):
