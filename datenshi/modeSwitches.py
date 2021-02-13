@@ -13,8 +13,8 @@ def __wrapper__():
     h = {}
     tbl_mode   = namedtuple('tbl_mode', 'std relax alt')
     h['stats'] = tbl_mode('users_stats', 'rx_stats', 'alternative_stats')
-    # I wish this is fixed
     h['score'] = tbl_mode('scores', 'scores_relax', 'scores_alternative')
+    h['beatmap_pc'] = tbl_mode('users_beatmap_playcount', 'rx_beatmap_playcount', 'users_beatmap_playcount')
     
     for k,v in h.items():
         g[k] = v
