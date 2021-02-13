@@ -563,8 +563,8 @@ def _genUpdatePP(n,f,i):
                 userID
             )
         )
-        if loggingEnabled:
-            log.info("Executed query {} with result {}".format(query, result))
+        #if loggingEnabled:
+        #    log.info("Executed query {} with result {}".format(query, result))
     globals()[n] = pp
 _genUpdatePP('updatePP',calculatePP,0)
 _genUpdatePP('updatePPRelax',calculatePPRelax,1)
