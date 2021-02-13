@@ -204,7 +204,7 @@ if features.RANKING_SCOREV2:
     _genIncTime('incrementPlaytimeAlt',2)
 
 def _genObtainStat(n,i,mm):
-    t = modeSwitches.score[i]
+    t = modeSwitches.stats[i]
     def stat(userID, gameMode):
         """
         Get all user stats relative to `gameMode`
