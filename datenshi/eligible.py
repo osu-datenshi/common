@@ -19,8 +19,8 @@ from discord_webhook import DiscordWebhook, DiscordEmbed
 
 # Dev note: this is meant to be a toggle done for features.
 def submitScore(userID):
-	mtFlag = glob.db.fetch('select value_int from system_settings where name = "game_maintenance"')
-	mtMode = mtFlag is not None and mtFlag['value_int']
+    mtFlag = glob.db.fetch('select value_int from system_settings where name = "game_maintenance"')
+    mtMode = mtFlag is not None and mtFlag['value_int']
     return mtMode and userUtils.isInPrivilegeGroup(userID, "Developer")
 
 def scoreV2(userID):
