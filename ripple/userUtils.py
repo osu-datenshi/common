@@ -200,8 +200,6 @@ def _genIncTime(n,i):
     globals()[n] = inc
 _genIncTime('incrementPlaytime',0)
 _genIncTime('incrementPlaytimeRelax',1)
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    incrementPlaytimeRX = incrementPlaytimeRelax
 if features.RANKING_SCOREV2:
     _genIncTime('incrementPlaytimeAlt',2)
 
@@ -236,8 +234,6 @@ def _genObtainStat(n,i,mm):
     globals()[n] = stat
 _genObtainStat('getUserStats',0,dict())
 _genObtainStat('getUserStatsRelax',1,dict([(3,getUserStats)]))
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    getUserStatsRx = getUserStatsRelax
 if features.RANKING_SCOREV2:
     _genObtainStat('getUserStats',2,dict())
 
@@ -266,8 +262,6 @@ def _genMaxCombo(n,i):
     globals()[n] = maxcombo
 _genMaxCombo('getMaxCombo', 0)
 _genMaxCombo('getMaxComboRelax', 1)
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    getMaxComboRX = getMaxComboRelax
 if features.RANKING_SCOREV2:
     _genMaxCombo('getMaxComboAlt', 2)
 
@@ -457,8 +451,6 @@ def _genUpdateLevel(n,i):
     globals()[n] = lv
 _genUpdateLevel('updateLevel', 0)
 _genUpdateLevel('updateLevelRelax', 1)
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    updateLevelRX = updateLevelRelax
 if features.RANKING_SCOREV2:
     _genUpdateLevel('updateLevelAlt', 2)
 
@@ -503,8 +495,6 @@ def _genCalcAcc(n,i):
     globals()[n] = acc
 _genCalcAcc('calculateAccuracy',0)
 _genCalcAcc('calculateAccuracyRelax',1)
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    calculateAccuracyRX = calculateAccuracyRelax
 if features.RANKING_SCOREV2:
     _genCalcAcc('calculateAccuracyAlt',2)
 
@@ -649,8 +639,6 @@ def _genUpdateStat(n,i,lf):
     globals()[n] = stat
 _genUpdateStat('updateStats',0,(updateLevel, updateAccuracy, updatePP))
 _genUpdateStat('updateStatsRelax',1,(updateLevelRelax, updateAccuracyRelax, updatePPRelax))
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    updateStatsRx = updateStatsRelax
 if features.RANKING_SCOREV2:
     _genUpdateStat('updateStatsAlt',2,(updateLevelAlt, updateAccuracyAlt, updatePPAlt))
 
@@ -674,8 +662,6 @@ def _genRefreshStat(n,f):
     globals()[n] = stat
 _genRefreshStat('refreshStats', updatePP)
 _genRefreshStat('refreshStatsRelax', updatePPRelax)
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    refreshStatsRx = refreshStatsRelax
 if features.RANKING_SCOREV2:
     _genRefreshStat('refreshStatsAlt', updatePPAlt)
 
@@ -690,8 +676,6 @@ def _genIncrementPC(n,i):
     globals()[n] = pc
 _genIncrementPC('incrementUserBeatmapPlaycount',0)
 _genIncrementPC('incrementUserBeatmapPlaycountRelax',1)
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    incrementUserBeatmapPlaycountRX = incrementUserBeatmapPlaycountRelax
 if features.RANKING_SCOREV2:
     _genIncrementPC('incrementUserBeatmapPlaycountAlt',2)
 
@@ -760,8 +744,6 @@ def _genIncrementReplays(n,i):
     globals()[n] = watch
 _genIncrementReplays('incrementReplaysWatched',0)
 _genIncrementReplays('incrementReplaysWatchedRelax',1)
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    incrementReplaysWatchedRX = incrementReplaysWatchedRelax
 if features.RANKING_SCOREV2:
     _genIncrementReplays('incrementReplaysWatchedAlt',2)
 
@@ -811,8 +793,6 @@ def _genGameRank(n,i):
     globals()[n] = rank
 _genGameRank('getGameRank',0)
 _genGameRank('getGameRankRelax',1)
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    getGameRankRx = getGameRankRelax
 if features.RANKING_SCOREV2:
     _genGameRank('getGameRankAlt',2)
 
@@ -832,8 +812,6 @@ def _genPlaycount(n,i):
     globals()[n] = pc
 _genPlaycount('getPlaycount',0)
 _genPlaycount('getPlaycountRelax',1)
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    getPlaycountRX = getPlaycountRelax
 if features.RANKING_SCOREV2:
     _genPlaycount('getPlaycountAlt',2)
 
@@ -856,8 +834,6 @@ def _genUpdateHits(n,i):
     globals()[n] = hits
 _genUpdateHits('updateTotalHits',0)
 _genUpdateHits('updateTotalHitsRelax',1)
-if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
-    updateTotalHitsRX = updateTotalHitsRelax
 if features.RANKING_SCOREV2:
     _genUpdateHits('updateTotalHitsAlt',2)
 
@@ -1726,4 +1702,16 @@ _wipe()
 del _wipe
 
 if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
+    incrementPlaytimeRX = incrementPlaytimeRelax
+    getUserStatsRx = getUserStatsRelax
+    getMaxComboRX = getMaxComboRelax
+    updateLevelRX = updateLevelRelax
+    calculateAccuracyRX = calculateAccuracyRelax
+    updateStatsRx = updateStatsRelax
+    refreshStatsRx = refreshStatsRelax
+    incrementUserBeatmapPlaycountRX = incrementUserBeatmapPlaycountRelax
+    incrementReplaysWatchedRX = incrementReplaysWatchedRelax
+    getGameRankRx = getGameRankRelax
+    getPlaycountRX = getPlaycountRelax
+    updateTotalHitsRX = updateTotalHitsRelax
     print("[!] PLEASE NORMALIZE THE RELAX ABBREVIATION IN THIS FILE.")
