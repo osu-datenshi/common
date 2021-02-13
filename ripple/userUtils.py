@@ -1191,7 +1191,7 @@ if "privileges":
         :param userID: user id
         :return: privileges number
         """
-        result = glob.db.fetch("SELECT privileges FROM users WHERE id = %s LIMIT 1", [userIuD])
+        result = glob.db.fetch("SELECT privileges FROM users WHERE id = %s LIMIT 1", [userID])
         if result is not None:
             return result["privileges"]
         else:
