@@ -203,7 +203,7 @@ _genIncTime('incrementPlaytimeRelax',1)
 if features.RANKING_SCOREV2:
     _genIncTime('incrementPlaytimeAlt',2)
 
-def _genObtainStat(n,i,mm):
+def _genObtainStat(n,i,fr,mm):
     t = modeSwitches.stats[i]
     def stat(userID, gameMode):
         """
@@ -228,14 +228,14 @@ def _genObtainStat(n,i,mm):
                             FROM {t} WHERE id = %s LIMIT 1""".format(t=t,gm=modeForDB), [userID])
 
         # Get game rank
-        stats["gameRank"] = getGameRank(userID, gameMode)
+        stats["gameRank"] = globals()[fr](userID, gameMode)
         # Return stats + game rank
         return stats
     globals()[n] = stat
-_genObtainStat('getUserStats',0,dict())
-_genObtainStat('getUserStatsRelax',1,dict([(3,getUserStats)]))
+_genObtainStat('getUserStats',0,'getGameRank',dict())
+_genObtainStat('getUserStatsRelax',1,'getGameRankRelax',dict([(3,getUserStats)]))
 if features.RANKING_SCOREV2:
-    _genObtainStat('getUserStats',2,dict())
+    _genObtainStat('getUserStats',2,'getGameRankAlt',dict())
 
 def _genMaxCombo(n,i):
     t = modeSwitches.score[i]
