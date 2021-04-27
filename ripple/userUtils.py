@@ -178,7 +178,32 @@ if "personal settings":
         # k = "{}:pp_gain_information".format(('relax' if False else 'standard'))
         k = "global:pp_gain_information"
         setUserSetting(userID, k, t)
+    
+    def TopPlayFreeze(userID):
+        """
+        Top Play Freeze
+        A toggle to prevent you from submitting top plays.
+        - Rei_Fan49
+        """
+        result = getOrderedUserSetting(userID, 'top_play_freeze', [])
+        if result is not None:
+            return bool(result)
+        return False
+    
+    def setTopPlayFreeze(userID, t):
+        k = "global:top_play_freeze"
+        setUserSetting(userID, k, t)
+    
+    def ScoreSubmitFreeze(userID):
+        result = getOrderedUserSetting(userID, 'submit_play_freeze', [])
+        if result is not None:
+            return bool(result)
+        return False
 
+    def setScoreSubmitFreeze(userID, t):
+        k = "global:submit_play_freeze"
+        setUserSetting(userID, k, t)
+    
 def noPPLimit(userID, relax):
     result = glob.db.fetch(
         "SELECT unrestricted_pp FROM {table}_stats WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users',
