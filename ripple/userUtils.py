@@ -62,7 +62,7 @@ if "userSettings":
         return result
 
     def setUserSetting(userID, key, value):
-        query = glob.db.fetch('select int_value as i, str_value as s from user_settings where user_id = {} and name = %s'.format(userID), [key])
+        query = glob.db.fetch('select int_value as i, str_value as s, lock as l from user_settings where user_id = {} and name = %s'.format(userID), [key])
         input = [None, None]
         if isinstance(value,int):
             input[0] = value
@@ -71,6 +71,8 @@ if "userSettings":
         if query is None:
             glob.db.execute('insert into user_settings (user_id, name, int_value, str_value) values (%s, %s, %s, %s)', [userID, key, *input])
         else:
+            if query['l']:
+                returns
             glob.db.execute('update user_settings set int_value = %s, str_value = %s where user_id = {} and name = %s'.format(userID), [*input, key])
 
     def resetUserSetting(userID, key):
