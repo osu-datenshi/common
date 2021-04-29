@@ -40,7 +40,7 @@ def logUserLog(log, fileMd5, userID, gameMode, scoreid):
 
 def getBeatmapTime(beatmapID):
     p = 0
-    r = requests.get("https://s.troke.id/api/b/{}".format(beatmapID)).text
+    r = requests.get("https://storage.troke.id/api/b/{}".format(beatmapID)).text
     if r != "null\n":
         p = json.loads(r)['TotalLength']
 
