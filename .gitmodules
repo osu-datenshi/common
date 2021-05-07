@@ -1,0 +1,3 @@
+[submodule "darktenshi"]
+	path = darktenshi
+	url = https://gitlab.com/osudatenshi/py-darkness.git
