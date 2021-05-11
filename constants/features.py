@@ -8,5 +8,7 @@ RANKING_SCOREV2 = False
 RANKED_SCORE_RECALC = 1613235600
 # migrate all scoring data into one master table
 MASTER_SCORE_TABLE = True
+# migrate all user data into one master table
+MASTER_USER_TABLE = True
 # once ready to full deprecate it, put it in here.
 DEPRECATE_SHITTY_ABBREVIATION = []
