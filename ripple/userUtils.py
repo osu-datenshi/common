@@ -583,20 +583,29 @@ def _genUpdatePP(n,f,i):
 		:param userID: user id
 		:param gameMode: game mode number
 		"""
-		glob.db.execute(
-			"UPDATE {} SET pp_{}=%s WHERE id = %s LIMIT 1".format(modeSwitches.stats[i], scoreUtils.readableGameMode(gameMode)),
-			(
-				f(userID, gameMode),
-				userID
+		if features.MASTER_USER_TABLE:
+			glob.db.execute(
+				"UPDATE master_stats SET pp=%d WHERE user_id = %d and special_mode = %d and game_mode = %d",
+				(
+					f(userID, gameMode),
+					userID, i, gameMode
+				)
 			)
-		)
+		else:
+			glob.db.execute(
+				"UPDATE {} SET pp_{}=%s WHERE id = %s LIMIT 1".format(modeSwitches.stats[i], scoreUtils.readableGameMode(gameMode)),
+				(
+					f(userID, gameMode),
+					userID
+				)
+			)
 		#if loggingEnabled:
 		#    log.info("Executed query {} with result {}".format(query, result))
 	globals()[n] = pp
 _genUpdatePP('updatePP',calculatePP,0)
 _genUpdatePP('updatePPRelax',calculatePPRelax,1)
 if features.RANKING_SCOREV2:
-	_genUpdatePP('updateAccuracyAlt',calculatePPAlt,2)
+	_genUpdatePP('updatePPAlt',calculatePPAlt,2)
 
 def _genUpdateStat(n,i,lf):
 	t_stat  = modeSwitches.stats[i]
