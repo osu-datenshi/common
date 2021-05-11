@@ -670,7 +670,7 @@ def _genUpdateStat(n,i,lf):
 		
 		if needRecalc:
 			if features.MASTER_USER_TABLE:
-				glob.db.execute('UPDATE master_stats set ranked_score = (SELECT SUM(score) FROM scores WHERE userid = {0} AND play_mode = {1} AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3))) WHERE id = {0} and special_mode = {3} and game_mode = {1}'.format(userID, s.gameMode, mode, i))
+				glob.db.execute('UPDATE master_stats set ranked_score = (SELECT SUM(score) FROM scores WHERE userid = {0} AND play_mode = {1} AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3))) WHERE user_id = {0} and special_mode = {3} and game_mode = {1}'.format(userID, s.gameMode, mode, i))
 			else:
 				glob.db.execute('UPDATE {3} set ranked_score_{2} = (SELECT SUM(score) FROM scores WHERE userid = {0} AND play_mode = {1} AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3))) WHERE id = {0}'.format(userID, s.gameMode, mode, t_stat))
 
