@@ -214,16 +214,22 @@ def whitelistUserPPLimit(userID, relax, value=1):
 	glob.db.execute("UPDATE {table}_stats SET unrestricted_pp = %s WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users',
 																						   userid=userID),[value])
 def _genIncTime(n,i):
-	t = modeSwitches.stats[i]
-	def inc(userID,gameMode=0,length=0):
-		modeForDB = gameModes.getGameModeForDB(gameMode)
-		result = glob.db.fetch("SELECT playtime_{gm} as playtime FROM {t} WHERE id = %s".format(t=t,gm=modeForDB),
-							   [userID])
-		if result is not None:
-			glob.db.execute("UPDATE {t} SET playtime_{gm} = %s WHERE id = %s".format(t=t,gm=modeForDB),
-							[(int(result['playtime']) + int(length)), userID])
-		else:
-			print("Something went wrong...")
+	if features.MASTER_USER_TABLE:
+		def inc(userID,gameMode=0,length=0):
+			glob.db.execute("update master_stats set playtime=playtime + %d where user_id = %d and special_mode = %d and game_mode = %d",
+				[int(length), userID, i, gameMode]
+			)
+	else:
+		t = modeSwitches.stats[i]
+		def inc(userID,gameMode=0,length=0):
+			modeForDB = gameModes.getGameModeForDB(gameMode)
+			result = glob.db.fetch("SELECT playtime_{gm} as playtime FROM {t} WHERE id = %s".format(t=t,gm=modeForDB),
+								   [userID])
+			if result is not None:
+				glob.db.execute("UPDATE {t} SET playtime_{gm} = %s WHERE id = %s".format(t=t,gm=modeForDB),
+								[(int(result['playtime']) + int(length)), userID])
+			else:
+				print("Something went wrong...")
 	globals()[n] = inc
 _genIncTime('incrementPlaytime',0)
 _genIncTime('incrementPlaytimeRelax',1)
@@ -246,13 +252,21 @@ def _genObtainStat(n,i,fr,mm):
 			return mm[gameMode](userID,gameMode)
 		
 		# Get stats
-		stats = glob.db.fetch("""SELECT
-							ranked_score_{gm} AS rankedScore,
-							avg_accuracy_{gm} AS accuracy,
-							playcount_{gm} AS playcount,
-							total_score_{gm} AS totalScore,
-							pp_{gm} AS pp
-							FROM {t} WHERE id = %s LIMIT 1""".format(t=t,gm=modeForDB), [userID])
+		if features.MASTER_USER_TABLE:
+			stats = glob.db.fetch('''SELECT
+				ranked_score AS rankedScore, average_accuracy AS accuracy,
+				playcount AS playcount,	total_score AS totalScore,
+				pp AS pp FROM master_stats WHERE user_id = %s and special_mode = %d and game_mode = %d''', [
+					userID, i, gameMode
+				])
+		else:
+			stats = glob.db.fetch("""SELECT
+								ranked_score_{gm} AS rankedScore,
+								avg_accuracy_{gm} AS accuracy,
+								playcount_{gm} AS playcount,
+								total_score_{gm} AS totalScore,
+								pp_{gm} AS pp
+								FROM {t} WHERE id = %s LIMIT 1""".format(t=t,gm=modeForDB), [userID])
 
 		# Get game rank
 		stats["gameRank"] = globals()[fr](userID, gameMode)
@@ -463,18 +477,29 @@ def _genUpdateLevel(n,i):
 		#	return
 
 		# Get total score from db if not passed
-		mode = scoreUtils.readableGameMode(gameMode)
-		if totalScore == 0:
-			totalScore = glob.db.fetch(
-				"SELECT total_score_{m} as total_score FROM {t} WHERE id = %s LIMIT 1".format(t=modeSwitches.stats[i],m=mode), [userID])
-			if totalScore:
-				totalScore = totalScore["total_score"]
+		if features.MASTER_USER_TABLE:
+			if totalScore == 0:
+				totalResult = glob.db.fetch(
+					"SELECT total_score from master_stats WHERE user_id = %s and special_mode = %d and game_mode = %d", [userID, i, gameMode])
+				if totalResult:
+					totalScore = totalResult["total_score"]
 
-		# Calculate level from totalScore
-		level = getLevel(totalScore)
+			# Calculate level from totalScore
+			level = getLevel(totalScore)
+			glob.db.execute("UPDATE master_stats SET level = %s WHERE user_id = %s and special_mode = %d and game_mode = %d", [level, userID, i, gameMode])
+		else:
+			mode = scoreUtils.readableGameMode(gameMode)
+			if totalScore == 0:
+				totalScore = glob.db.fetch(
+					"SELECT total_score_{m} as total_score FROM {t} WHERE id = %s LIMIT 1".format(t=modeSwitches.stats[i],m=mode), [userID])
+				if totalScore:
+					totalScore = totalScore["total_score"]
 
-		# Save new level
-		glob.db.execute("UPDATE {t} SET level_{m} = %s WHERE id = %s LIMIT 1".format(t=modeSwitches.stats[i], m=mode), [level, userID])
+			# Calculate level from totalScore
+			level = getLevel(totalScore)
+
+			# Save new level
+			glob.db.execute("UPDATE {t} SET level_{m} = %s WHERE id = %s LIMIT 1".format(t=modeSwitches.stats[i], m=mode), [level, userID])
 	globals()[n] = lv
 _genUpdateLevel('updateLevel', 0)
 _genUpdateLevel('updateLevelRelax', 1)
@@ -567,7 +592,11 @@ def _genUpdateAcc(n,f,i):
 		"""
 		newAcc = f(userID, gameMode)
 		mode = scoreUtils.readableGameMode(gameMode)
-		glob.db.execute("UPDATE {t} SET avg_accuracy_{m} = %s WHERE id = %s LIMIT 1".format(t=modeSwitches.stats[i], m=mode),
+		if features.MASTER_USER_TABLE:
+			glob.db.execute("UPDATE master_stats SET average_accuracy = %s WHERE user_id = %s and special_mode = %d and game_mode = %d",
+						[newAcc, userID, i, gameMode])
+		else:
+			glob.db.execute("UPDATE {t} SET avg_accuracy_{m} = %s WHERE id = %s LIMIT 1".format(t=modeSwitches.stats[i], m=mode),
 						[newAcc, userID])
 	globals()[n] = acc
 _genUpdateAcc('updateAccuracy',calculateAccuracy,0)
@@ -640,7 +669,10 @@ def _genUpdateStat(n,i,lf):
 		needRecalc = recalcFlag()
 		
 		if needRecalc:
-			glob.db.execute('UPDATE {3} set ranked_score_{2} = (SELECT SUM(score) FROM scores WHERE userid = {0} AND play_mode = {1} AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3))) WHERE id = {0}'.format(userID, s.gameMode, mode, t_stat))
+			if features.MASTER_USER_TABLE:
+				glob.db.execute('UPDATE master_stats set ranked_score = (SELECT SUM(score) FROM scores WHERE userid = {0} AND play_mode = {1} AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3))) WHERE id = {0} and special_mode = {3} and game_mode = {1}'.format(userID, s.gameMode, mode, i))
+			else:
+				glob.db.execute('UPDATE {3} set ranked_score_{2} = (SELECT SUM(score) FROM scores WHERE userid = {0} AND play_mode = {1} AND completed = 3 AND beatmap_md5 in (select beatmap_md5 from beatmaps where ranked in (2,3))) WHERE id = {0}'.format(userID, s.gameMode, mode, t_stat))
 
 		# Update total score, playcount and play time
 		if s.playTime is not None:
@@ -648,12 +680,20 @@ def _genUpdateStat(n,i,lf):
 		else:
 			realPlayTime = s.fullPlayTime
 
-		glob.db.execute(
-			"UPDATE {t} SET total_score_{m}=total_score_{m}+%s, playcount_{m}=playcount_{m}+1, "
-			"playtime_{m} = playtime_{m} + %s "
-			"WHERE id = %s LIMIT 1".format(m=mode, t=t_stat),
-			(s.score, realPlayTime, userID)
-		)
+		if features.MASTER_USER_TABLE:
+			glob.db.execute(
+				"UPDATE master_stats SET total_score=total_score+%d, playcount=playcount+1, "
+				"playtime=playtime+%d 
+				"WHERE user_id = %d and special_mode = %d and game_mode = %d LIMIT 1",
+				(s.score, realPlayTime, userID, i, gameMode)
+			)
+		else:
+			glob.db.execute(
+				"UPDATE {t} SET total_score_{m}=total_score_{m}+%s, playcount_{m}=playcount_{m}+1, "
+				"playtime_{m} = playtime_{m} + %s "
+				"WHERE id = %s LIMIT 1".format(m=mode, t=t_stat),
+				(s.score, realPlayTime, userID)
+			)
 
 		# Calculate new level and update it
 		lf[0](userID, s.gameMode)
@@ -736,11 +776,18 @@ def _genObtainRankedPt(n,i):
 		:return: ranked score
 		"""
 		mode = scoreUtils.readableGameMode(gameMode)
-		result = glob.db.fetch("SELECT ranked_score_{} FROM {} WHERE id = %s LIMIT 1".format(mode,t), [userID])
-		if result is not None:
-			return result["ranked_score_{}".format(mode)]
+		if features.MASTER_USER_TABLE:
+			result = glob.db.fetch("SELECT ranked_score FROM master_stats WHERE user_id = %s and special_mode = %d and game_mode = %d", [userID, i, gameMode])
+			if result is not None:
+				return result["ranked_score"]
+			else:
+				return 0
 		else:
-			return 0
+			result = glob.db.fetch("SELECT ranked_score_{} FROM {} WHERE id = %s LIMIT 1".format(mode,t), [userID])
+			if result is not None:
+				return result["ranked_score_{}".format(mode)]
+			else:
+				return 0
 	globals()[n] = score
 _genObtainRankedPt('getRankedScore',0)
 _genObtainRankedPt('getRankedScoreRelax',1)
@@ -759,11 +806,18 @@ def getPP(userID, gameMode):
 	"""
 
 	mode = scoreUtils.readableGameMode(gameMode)
-	result = glob.db.fetch("SELECT pp_{} FROM {} WHERE id = %s LIMIT 1".format(mode, modeSwitches.stats[0]), [userID])
-	if result is not None:
-		return result["pp_{}".format(mode)]
+	if features.MASTER_USER_TABLE:
+		result = glob.db.fetch("SELECT pp FROM master_stats WHERE user_id = %s and special_mode = %d and game_mode = %d LIMIT 1", [userID, 0, gameMode])
+		if result is not None:
+			return result["pp"]
+		else:
+			return 0
 	else:
-		return 0
+		result = glob.db.fetch("SELECT pp_{} FROM {} WHERE id = %s LIMIT 1".format(mode, modeSwitches.stats[0]), [userID])
+		if result is not None:
+			return result["pp_{}".format(mode)]
+		else:
+			return 0
 
 def _genIncrementReplays(n,i):
 	def watch(userID, gameMode):
@@ -848,8 +902,11 @@ def _genPlaycount(n,i):
 		:return: playcount
 		"""
 		modeForDB = gameModes.getGameModeForDB(gameMode)
-		return glob.db.fetch(f"SELECT playcount_{modeForDB} FROM {t} WHERE id = %s LIMIT 1", [userID])[
-			"playcount_" + modeForDB]
+		if features.MASTER_USER_TABLE:
+			return glob.db.fetch("SELECT playcount FROM master_stats WHERE user_id = %s and special_mode = %d and game_mode = %d LIMIT 1", [userID, i, gameMode])["playcount"]
+		else:
+			return glob.db.fetch(f"SELECT playcount_{modeForDB} FROM {t} WHERE id = %s LIMIT 1", [userID])[
+				"playcount_" + modeForDB]
 	globals()[n] = pc
 _genPlaycount('getPlaycount',0)
 _genPlaycount('getPlaycountRelax',1)
@@ -862,16 +919,29 @@ def _genUpdateHits(n,i):
 		if score is None and userID == 0:
 			raise ValueError("Either score or userID must be provided")
 		if score is not None:
-			newHits = score.c50 + score.c100 + score.c300
+			if gameMode == gameModes.STD:
+				newHits = score.c50 + score.c100 + score.c300
+			elif gameMode == gameModes.TAIKO:
+				newHits = score.c100 + score.c300
+			elif gameMode == gameModes.CTB:
+				newHits = score.c50 + score.c100 + score.c300
+			elif gameMode == gameModes.MANIA:
+				newHits = score.c50 + score.c100 + score.cKatu + score.c300 + score.Geki
 			gameMode = score.gameMode
 			userID = score.playerUserID
-		glob.db.execute(
-			"UPDATE {t} SET total_hits_{gm} = total_hits_{gm} + %s WHERE id = %s LIMIT 1".format(
-				t=t,
-				gm=gameModes.getGameModeForDB(gameMode)
-			),
-			(newHits, userID)
-		)
+		if features.MASTER_USER_TABLE:
+			glob.db.execute(
+				"UPDATE master_stats SET total_hits = total_hits + %d WHERE user_id = %s and special_mode = %d and game_mode = %d LIMIT 1",
+				(newHits, userID, i, gameMode)
+			)
+		else:
+			glob.db.execute(
+				"UPDATE {t} SET total_hits_{gm} = total_hits_{gm} + %s WHERE id = %s LIMIT 1".format(
+					t=t,
+					gm=gameModes.getGameModeForDB(gameMode)
+				),
+				(newHits, userID)
+			)
 	globals()[n] = hits
 _genUpdateHits('updateTotalHits',0)
 _genUpdateHits('updateTotalHitsRelax',1)
