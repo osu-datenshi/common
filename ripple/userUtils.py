@@ -103,12 +103,9 @@ if "board":
 
 	def setScoreBoard(userID, relax):
 		setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 0)
-		glob.db.execute(
-			"UPDATE {table}_stats SET ppboard = 0 WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users', userid=userID))
 
 	def setPPBoard(userID, relax):
 		setUserSetting(userID, "{}:board".format(('relax' if relax else 'standard')), 1)
-		glob.db.execute("UPDATE {table}_stats SET ppboard = 1 WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users', userid=userID))
 
 	def InvisibleBoard(userID):
 		"""
