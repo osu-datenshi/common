@@ -91,8 +91,6 @@ if "board":
 		result = getOrderedUserSetting(userID, 'board', [('relax' if relax else 'standard')])
 		if result is not None:
 			return result == 1
-		result = glob.db.fetch(
-			"SELECT ppboard FROM {table}_stats WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users', userid=userID))
 		return result['ppboard']
 
 	def BoardMode(userID, relax):
