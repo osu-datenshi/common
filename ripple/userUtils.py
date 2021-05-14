@@ -201,15 +201,18 @@ if "personal settings":
 		k = "global:submit_play_freeze"
 		setUserSetting(userID, k, t)
 	
-def noPPLimit(userID, relax):
+def noPPLimit(userID, gameMode, specialMode):
 	result = glob.db.fetch(
-		"SELECT unrestricted_pp FROM {table}_stats WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users',
-																			userid=userID))
-	return result['unrestricted_pp']
+		"SELECT unrestricted_play FROM master_stats WHERE user_id = %d and special_mode = %d and game_mode = %d",
+		[userID, specialMode, gameMode]
+	)
+	return result['unrestricted_play']
 
-def whitelistUserPPLimit(userID, relax, value=1):
-	glob.db.execute("UPDATE {table}_stats SET unrestricted_pp = %s WHERE id = {userid}".format(table=STUPIDEST_ABBREVIATION_LIST[0] if relax else 'users',
-																						   userid=userID),[value])
+def whitelistUserPPLimit(userID, gameMode, specialMode, value=1):
+	glob.db.execute("update master_stats set unrestricted_play = %d where user_id = %d and special_mode = %d and (0 > game_mode or game_mode = %d)", 
+		[value, userID, specialMode, gameMode]
+	)
+
 def _genIncTime(n,i):
 	if features.MASTER_USER_TABLE:
 		def inc(userID,gameMode=0,length=0):
