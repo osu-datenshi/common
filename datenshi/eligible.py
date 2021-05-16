@@ -29,3 +29,9 @@ def scoreV2(userID):
 	if not features.RANKING_SCOREV2:
 		return False
 	return userUtils.isInPrivilegeGroup(userID, "Chat Moderators")
+
+def tryLogin(userID):
+	mtFlag = glob.db.fetch('select value_int from bancho_settings where name = "dev_maintenance"')
+	if mtFlag is not None and mtFlag['value_int']:
+		return userUtils.isInPrivilegeGroup(userID, "Developer")
+	return True
