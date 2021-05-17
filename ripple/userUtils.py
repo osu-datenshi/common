@@ -207,7 +207,7 @@ def noPPLimit(userID, gameMode, specialMode):
 	return result['unrestricted_play']
 
 def whitelistUserPPLimit(userID, gameMode, specialMode, value=1):
-	glob.db.execute("update master_stats set unrestricted_play = %d where user_id = %d and special_mode = %d and (0 > game_mode or game_mode = %d)", 
+	glob.db.execute("update master_stats set unrestricted_play = %d where user_id = %d and special_mode = %d and (0 > game_mode or game_mode = %d)",
 		[value, userID, specialMode, gameMode]
 	)
 
@@ -681,7 +681,7 @@ def _genUpdateStat(n,i,lf):
 		if features.MASTER_USER_TABLE:
 			glob.db.execute(
 				"UPDATE master_stats SET total_score=total_score+%d, playcount=playcount+1, "
-				"playtime=playtime+%d 
+				"playtime=playtime+%d "
 				"WHERE user_id = %d and special_mode = %d and game_mode = %d LIMIT 1",
 				(s.score, realPlayTime, userID, i, gameMode)
 			)
