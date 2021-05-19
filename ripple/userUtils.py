@@ -254,7 +254,7 @@ def _genObtainStat(n,i,fr,mm):
 			stats = glob.db.fetch('''SELECT
 				ranked_score AS rankedScore, average_accuracy AS accuracy,
 				playcount AS playcount,	total_score AS totalScore,
-				pp AS pp FROM master_stats WHERE user_id = %s and special_mode = %d and game_mode = %d''', [
+				pp AS pp FROM master_stats WHERE user_id = %s and special_mode = %s and game_mode = %s''', [
 					userID, i, gameMode
 				])
 		else:
