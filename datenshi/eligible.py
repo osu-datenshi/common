@@ -35,3 +35,13 @@ def tryLogin(userID):
 	if mtFlag is not None and mtFlag['value_int']:
 		return userUtils.isInPrivilegeGroup(userID, "Developer")
 	return True
+
+def tryLoadBeatmap(userID):
+	mtFlag = glob.db.fetch('select value_int from bancho_settings where name = "beatmap_addition"')
+	if mtFlag is None:
+		return True
+	if mtFlag['value_int'] == 2:
+		return False
+	elif mtFlag['value_int'] == 1:
+		return userUtils.isInPrivilegeGroup(userID, "Developer")
+	return True
