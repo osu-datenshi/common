@@ -1,0 +1,53 @@
+[flake8]
+extend_exclude=
+  # Ignore submodules
+  darktenshi/,
+  # Ignore template snippet file
+  .template.quick-snippet.py
+
+extend_ignore=
+  # ---- FLAKE-DEFAULT IGNORE ----
+  # E722 bare except
+  E722,
+  # whitespace control
+  E201,E202,E203,
+  E221,E222,
+  # E227,E231
+  E227,E231,
+  E251,
+  # E261,E262 comment marker
+  E261,E262,E265,
+  # no need 2 blanks
+  E302,E305,
+  # multistatement is cool on some cases.
+  E702,
+  # lambda are meant to be assigned wtf
+  E731,
+  # F401, lets evaluate this outside from here.
+  F401,
+  # F821, this is messed up. WONTFIX
+  F821,
+  # F841, this somewhat questionable. WONTFIX?
+  F841,
+  # W191 tab warning
+  W191,
+  # SEPARATE THOSE
+  E252, E501,
+  # ---- FLAKE-TABS IGNORE ----
+  # ET127: WONTFIX until new solution given
+  ET127,
+  # ET128: too confusing. WONTFIX for now
+  ET128
+
+max_line_length = 160
+max_doc_length = 1024
+
+# show_source = True
+# statistics = True
+
+# flake8 tabs
+use-flake8-tabs = True
+indent_style = tab
+#tab_width = 4
+blank_lines_indent = maybe
+indent-tabs-def = 1
