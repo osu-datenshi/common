@@ -43,5 +43,7 @@ def tryLoadBeatmap(userID):
 	if mtFlag['value_int'] == 2:
 		return False
 	elif mtFlag['value_int'] == 1:
+		if userID == 0:
+			return False
 		return userUtils.isInPrivilegeGroup(userID, "Developer")
 	return True
