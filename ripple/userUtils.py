@@ -201,13 +201,13 @@ if "personal settings":
 	
 def noPPLimit(userID, gameMode, specialMode):
 	result = glob.db.fetch(
-		"SELECT unrestricted_play FROM master_stats WHERE user_id = %d and special_mode = %d and game_mode = %d",
+		"SELECT unrestricted_play FROM master_stats WHERE user_id = %s and special_mode = %s and game_mode = %s",
 		[userID, specialMode, gameMode]
 	)
 	return result['unrestricted_play']
 
 def whitelistUserPPLimit(userID, gameMode, specialMode, value=1):
-	glob.db.execute("update master_stats set unrestricted_play = %d where user_id = %d and special_mode = %d and (0 > game_mode or game_mode = %d)",
+	glob.db.execute("update master_stats set unrestricted_play = %s where user_id = %s and special_mode = %s and (0 > game_mode or game_mode = %s)",
 		[value, userID, specialMode, gameMode]
 	)
 
