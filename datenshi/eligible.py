@@ -47,3 +47,9 @@ def tryLoadBeatmap(userID):
 			return False
 		return userUtils.isInPrivilegeGroup(userID, "Developer")
 	return True
+
+def tryAddStat(userID):
+	mtFlag = glob.db.fetch('select value_int from bancho_settings where name = "beatmap_addition"')
+	if mtFlag is not None and mtFlag['value_int']:
+		return False
+	return True
