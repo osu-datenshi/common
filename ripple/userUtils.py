@@ -1677,7 +1677,7 @@ def deprecateTelegram2Fa(userID):
 		return True
 	return False
 
-def unlockAchievement(userID, achievementHahs):
+def unlockAchievement(userID, achievementHash):
 	glob.db.execute("INSERT INTO users_achievements (user_id, achievement_id, `time`) VALUES"
 					"(%s, %s, %s)", [userID, achievementHash, int(time.time())])
 
