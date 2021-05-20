@@ -683,7 +683,7 @@ def _genUpdateStat(n,i,lf):
 				"UPDATE master_stats SET total_score=total_score+%s, playcount=playcount+1, "
 				"playtime=playtime+%s "
 				"WHERE user_id = %s and special_mode = %s and game_mode = %s LIMIT 1",
-				(s.score, realPlayTime, userID, i, gameMode)
+				(s.score, realPlayTime, userID, i, s.gameMode)
 			)
 		else:
 			glob.db.execute(
