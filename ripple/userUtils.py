@@ -1,3 +1,4 @@
+import math
 import time
 import requests
 import json
@@ -40,10 +41,9 @@ def logUserLog(log, fileMd5, userID, gameMode, scoreid):
 
 def getBeatmapTime(beatmapID):
 	p = 0
-	r = requests.get("https://storage.troke.id/api/b/{}".format(beatmapID)).text
-	if r != "null\n":
-		p = json.loads(r)['TotalLength']
-
+	bm = glob.db.fetch("select length_drain, length_total from beatmaps_statistics where beatmap_id = %s", [beatmapID])
+	if bm:
+		p = math.ceil(bm.get('length_total',0.0))
 	return p
 
 if "userSettings":
