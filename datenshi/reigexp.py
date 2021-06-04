@@ -12,15 +12,17 @@ def match(type, search, string, flags=matchFlags):
 	else:
 		return search == string
 
-def replace(type, search, string, replacement, flags=matchFlags):
-	if not match(type, search, string):
+def replace(match_type, search, string, replace_type, replacement, flags=matchFlags):
+	if not match(match_type, search, string):
 		return string
-	if type == 'split':
+	if replace_type == 'total':
+		return replacement
+	if match_type == 'split':
 		split_search = '{1}{2}{1}'.format(r'\b', search)
 		return re.sub(split_search, replacement, string, flags=flags)
-	elif type in ('advanced', 'regexp'):
+	elif match_type in ('advanced', 'regexp'):
 		return re.sub(search, replacement, string, flags=flags)
-	elif type == 'partial':
+	elif match_type == 'partial':
 		return string.replace(search, replacement)
 	else:
 		return replacement
