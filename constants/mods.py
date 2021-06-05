@@ -134,7 +134,7 @@ def _wrapper_():
 		return sep.join(m)
 	
 	# register functions to global namespace
-	for f in [selectMods, toModString]:
+	for f in [selectMods, toModBits, toModString]:
 		g[f.__name__] = f
 
 _wrapper_()
