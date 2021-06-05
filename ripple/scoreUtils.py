@@ -33,38 +33,3 @@ def readableGameMode(gameMode):
 		return "ctb"
 	else:
 		return "mania"
-
-def readableMods(m):
-	"""
-	Return a string with readable std mods.
-	Used to convert a mods number for oppai
-
-	:param m: mods bitwise number
-	:return: readable mods string, eg HDDT
-	"""
-	r = ""
-	if not m:
-		return "nomod" # wtf too ugly
-	if m & mods.NOFAIL:
-		r += "NF"
-	if m & mods.EASY:
-		r += "EZ"
-	if m & mods.HIDDEN:
-		r += "HD"
-	if m & mods.HARDROCK:
-		r += "HR"
-	if m & mods.DOUBLETIME:
-		r += "DT"
-	if m & mods.NIGHTCORE:
-		r += "NC"
-	if m & mods.HALFTIME:
-		r += "HT"
-	if m & mods.FLASHLIGHT:
-		r += "FL"
-	if m & mods.SPUNOUT:
-		r += "SO"
-	if m & mods.TOUCHSCREEN:
-		r += "TD"
-	if m & mods.RELAX > 0:
-		r += "RX"
-	return r
