@@ -115,6 +115,9 @@ def _wrapper_():
 		for mb, mod in zip(range(len(a[mode])-1),a[mode][1:]):
 			if mod not in m and value & (1 << mb):
 				m.append(mod)
+		# Allow raw list if sep is None
+		if sep is None:
+			return m
 		return sep.join(m)
 	
 	# register functions to global namespace
