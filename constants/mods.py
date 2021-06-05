@@ -109,12 +109,12 @@ def _wrapper_():
 			value = value & ~g[excl_pair[1]]
 		if not value:
 			return 'NM'
-		m = set()
+		m = []
 		a = [sane_names, comm_names]
 		mode = 0 if mode not in range(len(a)) else mode
 		for mb, mod in zip(range(len(a[mode])-1),a[mode][1:]):
-			if value & (1 << mb):
-				m.add(mod)
+			if mod not in m and value & (1 << mb):
+				m.append(mod)
 		return sep.join(m)
 	
 	# register functions to global namespace
