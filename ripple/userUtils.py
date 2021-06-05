@@ -274,7 +274,7 @@ def _genObtainStat(n,i,fr,mm):
 _genObtainStat('getUserStats',0,'getGameRank',dict())
 _genObtainStat('getUserStatsRelax',1,'getGameRankRelax',dict([(3,getUserStats)]))
 if features.RANKING_SCOREV2:
-	_genObtainStat('getUserStats',2,'getGameRankAlt',dict())
+	_genObtainStat('getUserStatsAlt',2,'getGameRankAlt',dict())
 
 def _genMaxCombo(n,i):
 	t = modeSwitches.score[i]
