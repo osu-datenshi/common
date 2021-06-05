@@ -99,6 +99,39 @@ def _wrapper_():
 	# Register SCORE DOWN marker
 	g['SCORE_DOWN'] = selectMods('EM', 'NF', 'HT')
 	
+	def keyModToInt(value):
+		"""
+		Convert key mod to integer.
+		"""
+		sp_key = KM & ~DP
+		value_sp = value & sp_key
+		value_keys = toModString(value_sp, sep=None)
+		# stop if it's not containing exact 1 key mod.
+		# there's no assumption through the beatmap, so we don't do that.
+		if len(value_keys) != 1:
+			return None
+		# to obtain the value key, there's some dirty trick
+		# 1. get the first element, since it's only one element
+		# 2. get the first char of respective element, as the length is guaranteed.
+		value_key = value_keys[0][0]
+		is_dp = bool(value & DP)
+		return value_key * (2 if is_dp else 1)
+	
+	def intToKeyMod(value):
+		"""
+		Convert integer to given key mod.
+		"""
+		valid_keys = list(range(1,10)) + list(range(10,20,2))
+		# stop if invalid value.
+		if value not in valid_keys:
+			return None
+		need_dp = value < 10
+		key_sp = value if not need_dp else value // 2
+		return selectMods(
+			f'{key_sp}K',
+			'DP' if need_dp else 'NM'
+		)
+	
 	def toModBits(value):
 		"""
 		Convert given mod value into array of mod bits.
@@ -134,7 +167,7 @@ def _wrapper_():
 		return sep.join(m)
 	
 	# register functions to global namespace
-	for f in [selectMods, toModBits, toModString]:
+	for f in [selectMods, keyModToInt, intToKeyMod, toModBits, toModString]:
 		g[f.__name__] = f
 
 _wrapper_()
