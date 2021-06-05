@@ -50,7 +50,7 @@ def _wrapper_():
 	comm_names   = 'NM NF {} TD HD HR SD DT {} HT NC FL AP SO ATP PF 4K 5K 6K 7K 8K FI RD CN 9K DP 1K 3K 2K V2 MR'.format(
 		*[dumb[::-1] for dumb in stupid_names]
 	).split()
-	syntax_names = 'NM NF EM TD HD HR SD DT RL HT NC FL AP SO ATP PF K4 K5 K6 K7 K8 SUD RAN CIN 9K DP K1 K3 K2 V2 MIR'.split()
+	syntax_names = 'NM NF EM TD HD HR SD DT RL HT NC FL AP SO ATP PF K4 K5 K6 K7 K8 SUD RAN CIN K9 DP K1 K3 K2 V2 MIR'.split()
 	
 	# shorten global temporary
 	g = globals()
