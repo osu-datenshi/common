@@ -99,6 +99,19 @@ def _wrapper_():
 	# Register SCORE DOWN marker
 	g['SCORE_DOWN'] = selectMods('EM', 'NF', 'HT')
 	
+	def toModBits(value):
+		"""
+		Convert given mod value into array of mod bits.
+		"""
+		for excl_pair in excl_mods:
+			if not all(value & g[mp] for mp in excl_pair):
+				continue
+			value = value & ~g[excl_pair[1]]
+		if not value:
+			return []
+		m = [(1 << mb) for mb in range(len(sane_names)) if value & (1 << mb)]
+		return m
+		
 	def toModString(value, mode=0, sep=','):
 		"""
 		Convert given mod value into a mod string.
