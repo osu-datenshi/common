@@ -705,8 +705,10 @@ def _genUpdateStat(n,i,lf):
 			# Update ranked score
 			if not needRecalc:
 				glob.db.execute(
-					"UPDATE {t} SET ranked_score_{m}=ranked_score_{m}+%s WHERE id = %s LIMIT 1".format(t=t_stat,m=mode),
-					(s.rankedScoreIncrease, userID)
+					"UPDATE master_stats SET ranked_score = ranked_score + %s "
+					"WHERE user_id = %s and special_mode = %s and game_mode = %s",
+					(s.rankedScoreIncrease, userID, i, s.gameMode)
+				)
 				)
 
 			# Update accuracy
