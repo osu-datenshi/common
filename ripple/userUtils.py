@@ -709,6 +709,13 @@ def _genUpdateStat(n,i,lf):
 					"WHERE user_id = %s and special_mode = %s and game_mode = %s",
 					(s.rankedScoreIncrease, userID, i, s.gameMode)
 				)
+			
+			maxCombo = lf[3](userID, s.gameMode)
+			if s.maxCombo > maxCombo:
+				glob.db.execute(
+					"UPDATE master_stats SET max_combo = %s "
+					"WHERE user_id = %s and special_mode = %s and game_mode = %s and %s > max_combo",
+					(s.maxCombo, s.rankedScoreIncrease, userID, i, s.gameMode, s.maxCombo)
 				)
 
 			# Update accuracy
@@ -718,10 +725,10 @@ def _genUpdateStat(n,i,lf):
 			lf[2](userID, s.gameMode)
 		pass
 	globals()[n] = stat
-_genUpdateStat('updateStats',0,(updateLevel, updateAccuracy, updatePP))
-_genUpdateStat('updateStatsRelax',1,(updateLevelRelax, updateAccuracyRelax, updatePPRelax))
+_genUpdateStat('updateStats',0,(updateLevel, updateAccuracy, updatePP, getMaxCombo))
+_genUpdateStat('updateStatsRelax',1,(updateLevelRelax, updateAccuracyRelax, updatePPRelax, getMaxComboRelax))
 if features.RANKING_SCOREV2:
-	_genUpdateStat('updateStatsAlt',2,(updateLevelAlt, updateAccuracyAlt, updatePPAlt))
+	_genUpdateStat('updateStatsAlt',2,(updateLevelAlt, updateAccuracyAlt, updatePPAlt, getMaxComboAlt))
 
 def _genRefreshStat(n,f):
 	def stat(userID, gameMode):
