@@ -96,7 +96,7 @@ def __daten_import_call__(variableList):
 __daten_import_call__(globals())
 del __daten_import_call__
 
-def announceMap(idTuple, status, banchoCallback=None, autorankFlag=False):
+def announceMap(idTuple, status, ranker=None, banchoCallback=None, autorankFlag=False):
     """
     Announce the map both in discord (if applicable) and #announce
     """
@@ -112,12 +112,12 @@ def announceMap(idTuple, status, banchoCallback=None, autorankFlag=False):
     else:
         beatmapData = glob.db.fetch("SELECT beatmapset_id, beatmap_id, artist, title, difficulty_name, ranked, rankedby FROM beatmaps WHERE beatmap_id = {} LIMIT 1".format(mapID))
     
-    announceMapRaw(beatmapData, status, autoFlag=autorankFlag, banchoCallback=banchoCallback)
+    announceMapRaw(beatmapData, status, ranker=ranker, autoFlag=autorankFlag, banchoCallback=banchoCallback)
 
-def announceMapRaw(mapData, status, autoFlag=False, banchoCallback=None):
+def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=None):
     supportBancho  = callable(banchoCallback) # 'BOT_NAME' in dir(glob) is not a must
     supportDiscord = 'DiscordWebhook' in globals() and 'discord' in glob.conf.config and 'ranked-map' in glob.conf.config['discord']
-	ranker = 'Yohane'
+	rankerSet = ranker
     if autoFlag:
         status = f"auto-{status}"
         # apparently there's a case autorank happens to non-cached map.
@@ -130,6 +130,8 @@ def announceMapRaw(mapData, status, autoFlag=False, banchoCallback=None):
         else:
             userID = 1
 		pass
+	if rankerSet:
+		ranker = rankerSet
             
     if 'difficulty_name' in mapData:
         banchoMsg  = "[https://osu.ppy.sh/b/{} {} - {} [{}]] has been {}!".format(mapData['beatmap_id'],mapData['artist'],mapData['title'],mapData['difficulty_name'],status)
