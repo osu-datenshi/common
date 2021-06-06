@@ -288,14 +288,17 @@ def _genMaxCombo(n,i):
 		:return: dictionary with result
 		"""
 		# Get stats
-		if features.MASTER_SCORE_TABLE:
-			maxcombo = glob.db.fetch(
-				"SELECT max_combo FROM scores_master WHERE userid = %s AND play_mode = %s AND special_mode = {} ORDER BY max_combo DESC LIMIT 1".format(i),
-				[userID, gameMode])
-		else:
-			maxcombo = glob.db.fetch(
-				"SELECT max_combo FROM {} WHERE userid = %s AND play_mode = %s ORDER BY max_combo DESC LIMIT 1".format(t),
-				[userID, gameMode])
+		maxcombo = glob.db.fetch('select max_combo from master_stats where user_id = %s and special_mode = %s and game_mode = %s and max_combo > 0', [userID, i, gameMode])
+		
+		if maxcombo is None:
+			if features.MASTER_SCORE_TABLE:
+				maxcombo = glob.db.fetch(
+					"SELECT max_combo FROM scores_master WHERE userid = %s AND play_mode = %s AND special_mode = {} ORDER BY max_combo DESC".format(i),
+					[userID, gameMode])
+			else:
+				maxcombo = glob.db.fetch(
+					"SELECT max_combo FROM {} WHERE userid = %s AND play_mode = %s ORDER BY max_combo DESC".format(t),
+					[userID, gameMode])
 
 		# Return stats + game rank
 		return maxcombo["max_combo"]
