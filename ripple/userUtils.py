@@ -1816,12 +1816,11 @@ def obtainPPLimit(userID, gameMode, relax=False, modded=False):
 def _wipe():
 	to_d = []
 	for k,v in globals().items():
-		if callable(v) and k.startswith('_gen'):
+		if callable(v) and k.startswith('_gen') or k == '_wipe':
 			to_d.append(k)
 	for k in to_d:
 		del globals()[k]
 _wipe()
-del _wipe
 
 if 'relax' not in features.DEPRECATE_SHITTY_ABBREVIATION:
 	incrementPlaytimeRX = incrementPlaytimeRelax
