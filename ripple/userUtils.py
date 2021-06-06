@@ -1069,7 +1069,7 @@ if "account marker":
 		"""
 		result = glob.db.fetch("SELECT privileges FROM users WHERE id = %s LIMIT 1", [userID])
 		if result is not None:
-			return not (result["privileges"] & 3 > 0)
+			return not (result["privileges"] & 3)
 		else:
 			return True
 
@@ -1556,6 +1556,7 @@ if "hw approval":
 				return True
 
 			# Ban this user and append notes
+			isBan = isBanned(userID)
 			ban(userID)	# this removes the USER_PENDING_VERIFICATION flag too
 			appendNotes(userID, "{}'s multiaccount ({}), found HWID match while verifying account ({})".format(originalUsername, originalUserID, hashes[2:5]))
 			appendNotes(originalUserID, "Has created multiaccount {} ({})".format(username, userID))
@@ -1563,8 +1564,7 @@ if "hw approval":
 			# Restrict the original
 			restrict(originalUserID)
 			# send to discord
-			if 'DiscordWebhook' in globals():
-				pass
+			if not isBan and 'DiscordWebhook' in globals():
 				webhook = DiscordWebhook(url=glob.conf.config["discord"]["autobanned"])
 				embed = DiscordEmbed(title="NEW REPORTS!", description="{} has been banned because multiaccount (old id {} {})".format(username, originalUsername, originalUserID), color=16711680)
 				webhook.add_embed(embed)
