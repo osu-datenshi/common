@@ -131,7 +131,7 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 			userID = 1
 	pass
 	if rankerSet:
-	ranker = rankerSet
+		ranker = rankerSet
 			
 	if 'difficulty_name' in mapData:
 		banchoMsg  = "[https://osu.ppy.sh/b/{} {} - {} [{}]] has been {}!".format(mapData['beatmap_id'],mapData['artist'],mapData['title'],mapData['difficulty_name'],status)
