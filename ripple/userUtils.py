@@ -564,19 +564,22 @@ def _genCalcPP(n,i):
 		:return: total PP
 		"""
 		if features.MASTER_SCORE_TABLE:
-			return sum(round(round(row["pp"]) * 0.95 ** i) for i, row in enumerate(glob.db.fetchAll(
+			data = glob.db.fetchAll(
 				"SELECT pp FROM scores_master LEFT JOIN(beatmaps) USING(beatmap_md5) "
 				f"WHERE userid = %s AND play_mode = %s AND completed = 3 AND ranked >= 2 AND pp > 0 AND special_mode = {i} "
-				"ORDER BY pp DESC LIMIT 500",
+				"ORDER BY pp DESC",
 				(userID, gameMode)
-			)))
+			)
 		else:
-			return sum(round(round(row["pp"]) * 0.95 ** i) for i, row in enumerate(glob.db.fetchAll(
+			data = glob.db.fetchAll(
 				f"SELECT pp FROM {t} LEFT JOIN(beatmaps) USING(beatmap_md5) "
 				"WHERE userid = %s AND play_mode = %s AND completed = 3 AND ranked >= 2 AND pp > 0 "
-				"ORDER BY pp DESC LIMIT 500",
+				"ORDER BY pp DESC",
 				(userID, gameMode)
-			)))
+			)
+		totalPP = round(sum((row["pp"] * 0.95 ** i) for i, row in enumerate(data[:500])))
+		bonusPP = 500 * (1 - 0.9995 ** len(data))
+		return totalPP + bonusPP
 	globals()[n] = pp
 _genCalcPP('calculatePP',0)
 _genCalcPP('calculatePPRelax',1)
