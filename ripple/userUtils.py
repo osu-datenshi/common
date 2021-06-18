@@ -718,7 +718,7 @@ def _genUpdateStat(n,i,lf):
 				glob.db.execute(
 					"UPDATE master_stats SET max_combo = %s "
 					"WHERE user_id = %s and special_mode = %s and game_mode = %s and %s > max_combo",
-					(s.maxCombo, s.rankedScoreIncrease, userID, i, s.gameMode, s.maxCombo)
+					(s.maxCombo, userID, i, s.gameMode, s.maxCombo)
 				)
 
 			# Update accuracy
