@@ -174,6 +174,10 @@ class db:
 		:param initialSize: initial pool size
 		"""
 		self.pool = connectionsPool(host, username, password, database, initialSize)
+	
+	# TODO: make this an expanding query with partial function waits.
+	def expandQuery(self, query, params = ()):
+		pass
 
 	def execute(self, query, params = ()):
 		"""
