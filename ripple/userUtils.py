@@ -276,7 +276,7 @@ def _genObtainStat(n,i,fr,mm):
 				'maxCombo':0,
 				'pp':0
 			}
-			log.error("Unexpected error found on [%s][%s][%s]".format(userID, i, gameMode))
+			log.error("Unexpected error found on {}{}{}".format(userID, i, gameMode))
 			
 		# Get game rank
 		stats["gameRank"] = globals()[fr](userID, gameMode)
