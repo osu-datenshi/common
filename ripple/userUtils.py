@@ -266,7 +266,18 @@ def _genObtainStat(n,i,fr,mm):
 								total_score_{gm} AS totalScore,
 								pp_{gm} AS pp
 								FROM {t} WHERE id = %s LIMIT 1""".format(t=t,gm=modeForDB), [userID])
-
+		
+		if stats is None:
+			stats = {
+				'rankedScore':0,
+				'accuracy':0.0,
+				'playcount':0,
+				'totalScore':0,
+				'maxCombo':0,
+				'pp':0
+			}
+			log.error("Unexpected error found on [%s][%s][%s]".format(userID, i, gameMode))
+			
 		# Get game rank
 		stats["gameRank"] = globals()[fr](userID, gameMode)
 		# Return stats + game rank
