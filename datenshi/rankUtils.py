@@ -147,7 +147,7 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 		embed.set_thumbnail(url='https://b.ppy.sh/thumb/{}.jpg'.format(str(mapData["beatmapset_id"])))
 		userID = None
 		if userID:
-			embed.set_author(name='{}'.format(ranker), url='https://osu.troke.id/u/{}'.format(str(userID)), icon_url='https://a.troke.id/{}'.format(str(userID)))
+			embed.set_author(name='{}'.format(ranker), url='https://osu.datenshi.pw/u/{}'.format(str(userID)), icon_url='https://a.datenshi.pw/{}'.format(str(userID)))
 		else:
 			embed.set_author(name='{}'.format(ranker), url=None, icon_url=None)
 		embed.set_footer(text='This map was {} from in-game'.format(status))
