@@ -84,9 +84,9 @@ def __daten_import_call__(variableList):
 		else:
 			return None
 		glob.db.execute("UPDATE beatmaps SET ranked = {}, ranked_status_freezed = {}, rankedby = {} WHERE beatmap_id in ({})".format(
-		  rankTypeID, freezeStatus, rankUserID,
-		  ','.join(['%s'] * len(mapList))),
-		  [*(mapList if mapList else [0])]
+			rankTypeID, freezeStatus, rankUserID,
+			','.join(['%s'] * len(mapList))),
+			[*(mapList if mapList else [0])]
 		)
 	
 	variableList['editSet'] = editSet
