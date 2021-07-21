@@ -164,8 +164,9 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 			embed.set_color(0xff0000)
 		else:
 			embed.set_title("{0} - {1}".format(
-				bmData['artist'], bmData['title'],
+				mapData['artist'], mapData['title'],
 			))
+			
 			def safeReplace(text):
 				outText = text
 				for c in '`':
@@ -173,6 +174,7 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 				for c in '[]()*_~|<:>':
 					outText = outText.replace(c, f"\\{c}")
 				return outText
+			
 			modeData = [
 				[
 					"{} {}".format(
