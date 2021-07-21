@@ -180,12 +180,13 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 					) for bmData in bmSData.values() if bmData['mode'] == mode
 				] for mode in range(4)
 			]
+			fbmData = list(bmSData.values())[0]
 			sameIcon = len(set([m['ranked'] for m in bmSData.values()])) <= 1
 			sameMode = len([m for m in modeData if m]) <= 1
 			embed.set_title("{2}{3} {0} - {1}".format(
 				mapData['artist'], mapData['title'],
-				modeIcons[bmSData.values()[0]['mode']] if sameMode else '',
-				tierIcons[bmSData.values()[0]['ranked']] if sameIcon else '',
+				modeIcons[fbmData['mode']] if sameMode else '',
+				tierIcons[fbmData['ranked']] if sameIcon else '',
 			))
 			for mode in range(4):
 				if not modeData[mode]:
