@@ -197,6 +197,7 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 						['Standard', 'Taiko', 'Catch The Beat' 'osu!mania'][mode]
 					),
 					value="\n".join(modeData[mode]),
+					inline=False
 				)
 			embed.set_url('https://osu.datenshi.pw/s/{}'.format(mapData['beatmapset_id']))
 			embed.set_description('[Download Link](https://osu.datenshi.pw/d/{0})'.format(mapData["beatmapset_id"]))
