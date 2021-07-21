@@ -163,10 +163,6 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 			embed.set_description('Map is {1}\n[Download Link](https://osu.datenshi.pw/d/{0})'.format(mapData["beatmapset_id"], status))
 			embed.set_color(0xff0000)
 		else:
-			embed.set_title("{0} - {1}".format(
-				mapData['artist'], mapData['title'],
-			))
-			
 			def safeReplace(text):
 				outText = text
 				for c in '`':
@@ -177,20 +173,32 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 			
 			modeData = [
 				[
-					"{} {}".format(
+					"{1} [{0}]({2})".format(
 						safeReplace(bmData['difficulty_name']),
-						tierIcons[bmData['ranked']]
+						tierIcons[bmData['ranked']],
+						"https://osu.datenshi.pw/b/{}".format(bmData['beatmap_id'])
 					) for bmData in bmSData.values() if bmData['mode'] == mode
 				] for mode in range(4)
 			]
-			modeMsg = "\n".join(
-				"{} {}".format(
-					modeIcons[mode],
-					' '.join(modeData[mode]),
-				) for mode in range(4) if modeData[mode]
-			)
+			sameIcon = len(set([m['ranked'] for m in bmSData.values()])) <= 1
+			sameMode = len([m for m in modeData if m]) <= 1
+			embed.set_title("{2}{3} {0} - {1}".format(
+				mapData['artist'], mapData['title'],
+				modeIcons[bmSData.values()[0]['mode']] if sameMode else '',
+				tierIcons[bmSData.values()[0]['ranked']] if sameIcon else '',
+			))
+			for mode in range(4):
+				if not modeData[mode]:
+					continue
+				embed.add_embed_field(
+					name='Difficulties' if sameMode else "{} {}".format(
+						modeIcons[mode],
+						['Standard', 'Taiko', 'Catch The Beat' 'osu!mania'][mode]
+					),
+					value="\n".join(modeData[mode]),
+				)
 			embed.set_url('https://osu.datenshi.pw/s/{}'.format(mapData['beatmapset_id']))
-			embed.set_description('{1}\n[Download Link](https://osu.datenshi.pw/d/{0})'.format(mapData["beatmapset_id"], modeMsg))
+			embed.set_description('[Download Link](https://osu.datenshi.pw/d/{0})'.format(mapData["beatmapset_id"]))
 			embed.set_color(0xff8000)
 		embed.set_thumbnail(url='https://b.ppy.sh/thumb/{}.jpg'.format(str(mapData["beatmapset_id"])))
 		userID = None
