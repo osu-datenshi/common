@@ -194,7 +194,7 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 				embed.add_embed_field(
 					name='Difficulties' if sameMode else "{} {}".format(
 						modeIcons[mode],
-						['Standard', 'Taiko', 'Catch The Beat' 'osu!mania'][mode]
+						['Standard', 'Taiko', 'Catch The Beat', 'osu!mania'][mode]
 					),
 					value="\n".join(modeData[mode]),
 					inline=False
