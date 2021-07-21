@@ -188,7 +188,7 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 				) for mode in range(4) if modeData[mode]
 			)
 			embed.set_url('https://osu.datenshi.pw/s/{}'.format(mapData['beatmapset_id']))
-			embed.set_description('{}\n[Download Link](https://osu.datenshi.pw/d/{0})'.format(mapData["beatmapset_id"], modeMsg))
+			embed.set_description('{1}\n[Download Link](https://osu.datenshi.pw/d/{0})'.format(mapData["beatmapset_id"], modeMsg))
 			embed.set_color(0xff8000)
 		embed.set_thumbnail(url='https://b.ppy.sh/thumb/{}.jpg'.format(str(mapData["beatmapset_id"])))
 		userID = None
