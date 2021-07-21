@@ -203,7 +203,6 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 			embed.set_description('[Download Link](https://osu.datenshi.pw/d/{0})'.format(mapData["beatmapset_id"]))
 			embed.set_color(0xff8000)
 		embed.set_thumbnail(url='https://b.ppy.sh/thumb/{}.jpg'.format(str(mapData["beatmapset_id"])))
-		userID = None
 		if userID:
 			embed.set_author(name='{}'.format(ranker), url='https://osu.datenshi.pw/u/{}'.format(str(userID)), icon_url='https://a.datenshi.pw/{}'.format(str(userID)))
 		else:
