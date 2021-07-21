@@ -21,6 +21,7 @@ except ImportError:
 	pass
 
 tier = ('unranked', 'pending', 'qualified', 'loved', 'ranked')
+tierIcons = {-1: '😦', 0: '💔', 2: '⏫', 3: '☑️', 4: '✅', 5: '❤️'}
 
 def __daten_import_call__(variableList):
 	def editSet(mapsetID, status, rankUserID):
@@ -142,8 +143,53 @@ def announceMapRaw(mapData, status, ranker=None, autoFlag=False, banchoCallback=
 	if supportBancho:
 		banchoCallback(banchoMsg)
 	if supportDiscord:
+		modeIcons = [
+			'<:modeosu:800724455579713536>',
+			'<:modetaiko:800724456070447196>',
+			'<:modefruits:800724454980190228>',
+			'<:modemania:800724455126335538>'
+		]
 		webhook = DiscordWebhook(url=glob.conf.config["discord"]["ranked-map"])
-		embed = DiscordEmbed(description='{}\nDownload : https://osu.ppy.sh/s/{}'.format(discordMsg, mapData["beatmapset_id"]), color=242424)
+		embed = DiscordEmbed()
+		# I KNOW THIS IS REDUNDANT BUT I HAD TO DO IT
+		bmSData = dict((bmData['beatmap_id'], bmData) for bmData in glob.db.fetchAll('select beatmap_id, artist, title, difficulty_name, mode, ranked from beatmaps where beatmapset_id = %s', (mapData['beatmapset_id'],)))
+		if 'difficulty_name' in mapData:
+			bmData = bmSData[mapData['beatmap_id']]
+			embed.set_title("{3}{4} {0} - {1} [{2}]".format(
+				bmData['artist'], bmData['title'], bmData['difficulty_name'],
+				modeIcons[bmData['mode']], tierIcons[bmData['ranked']],
+			))
+			embed.set_url('https://osu.datenshi.pw/b/{}'.format(mapData['beatmap_id']))
+			embed.set_description('Map is {1}\n[Download Link](https://osu.datenshi.pw/d/{0})'.format(mapData["beatmapset_id"], status))
+			embed.set_color(0xff0000)
+		else:
+			embed.set_title("{0} - {1}".format(
+				bmData['artist'], bmData['title'],
+			))
+			def safeReplace(text):
+				outText = text
+				for c in '`':
+					outText = outText.replace(c, '')
+				for c in '[]()*_~|<:>':
+					outText = outText.replace(c, f"\\{c}")
+				return outText
+			modeData = [
+				[
+					"{} {}".format(
+						safeReplace(bmData['difficulty_name']),
+						tierIcons[bmData['ranked']]
+					) for bmData in bmSData.values() if bmData['mode'] == mode
+				] for mode in range(4)
+			]
+			modeMsg = "\n".join(
+				"{} {}".format(
+					modeIcons[mode],
+					' '.join(modeData[mode]),
+				) for mode in range(4) if modeData[mode]
+			)
+			embed.set_url('https://osu.datenshi.pw/s/{}'.format(mapData['beatmapset_id']))
+			embed.set_description('{}\n[Download Link](https://osu.datenshi.pw/d/{0})'.format(mapData["beatmapset_id"], modeMsg))
+			embed.set_color(0xff8000)
 		embed.set_thumbnail(url='https://b.ppy.sh/thumb/{}.jpg'.format(str(mapData["beatmapset_id"])))
 		userID = None
 		if userID:
